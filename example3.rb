@@ -9,10 +9,10 @@ GC_TEAMS_URI = GC_BASE_URI + '/teams?page_number=0&page_size=' + GC_TEAM_MAX
 
 
 class Team
-    attr_accessor :complex_name
-    attr_accessor :relative_href
-    attr_accessor :href
-    attr_accessor :name
+    #attr_accessor :complex_name
+    #attr_accessor :relative_href
+    #attr_accessor :href
+    #attr_accessor :name
 # possible fields
 #    .parsed_name
 #    .parsed_href
@@ -39,7 +39,19 @@ class Team
         puts "======================="
         puts @name
         puts "======================="
-        pp page.body
+        #pp page.body
+        
+        # on team page, get city and sport that is shown under team name
+        temp   = page.parser.css('.pll h2').text.gsub("\n", "").strip
+        temp   = page.parser.css('.pll h3').text.gsub("\n", "").strip if temp.length == 0 # tournaments use h3
+        parts  = temp.split("·")
+        @city  = "-"
+        @sport = "-"
+        @city  = parts[0].strip if parts.length == 2  # normal display for teams
+        @sport = parts[1].strip if parts.length == 2  # normal display for teams
+        @sport = parts[0].strip if parts.length == 1  # tournaments don't show city
+		puts "%s" % @city
+		puts "%s" % @sport
 
 	end
 	
@@ -49,6 +61,8 @@ class Team
 		puts "  %s" % @relative_href  if full
 		puts "  %s" % @name
 		puts "  %s" % @href
+		puts "  %s" % @city
+		puts "  %s" % @sport
 	end
 end
 
@@ -71,34 +85,6 @@ form['email']    = email
 form['password'] = password
 form.submit
 
-# dump the html for the page
-#puts page.body
-
-# dump the html for the page
-#puts page.content
-
-# dump the title for the page
-#puts page.title
-
-
-#puts page.at('.entry-title').text.strip
-
-# show all links on a page
-#puts "======================="
-#page.links.each do |link|
-#	puts "%-20s: %s" % [link.text, link.href]
-#end
-#puts page.links.length
-
-#list = page.parser.css('button')
-#puts list.class
-#puts list.length
-#list.each do |item|
-#	puts "%-20s: %s" % [item.class, item.text]
-#end
-
-# login
-
 # get teams
 page = mechanize.get(GC_TEAMS_URI)
 #pp page.body
@@ -113,6 +99,7 @@ teams = []
 team_links.each do |link|
     team = Team.new(mechanize, link.text, link.href)
     teams << team
+    #exit
 end
 
 dump_teams(teams)
