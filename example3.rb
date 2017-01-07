@@ -55,6 +55,7 @@ class Team
         @sport = parts[1].strip if parts.length == 2  # normal display for teams
         @sport = parts[0].strip if parts.length == 1  # tournaments don't show city
 
+        # parse game summary from team page
         # mechanize/nokogiri do NOT run javascript, but GC passes game summary data as a JSON string
         # TODO: try watir or selenium to get html AFTER javascript???
         temp = page.body                                           # get body as a string
@@ -63,29 +64,30 @@ class Team
         json_encoded = json_encoded.gsub("\\u0022", "\"")          # convert unicode quote
         json_encoded = json_encoded.gsub("\\u002D", "-")           # convert unicode hyphen
         json_encoded = json_encoded.gsub(" \$\.parseJSON(\'", "")  # remove leading cruft
-        #puts json_encoded
-        #puts ""
-        #puts ""
         json_encoded = json_encoded.gsub("\'),", "")               # remove traikling cruft
-        #puts json_encoded
-        #puts ""
-        #puts ""
-        
         json_decoded = JSON.parse json_encoded                     # conver to a hash
-        puts json_decoded
-        
+
+        # compute W-L-T record from game json game summary
+        @wins   = 0
+        @losses = 0
+        @ties   = 0
+        json_decoded.each do |game|
+			@wins   += 1 if game["result"] === "W"
+			@losses += 1 if game["result"] === "L"
+			@ties   += 1 if game["result"] === "T"
+        end        
  
 	end
 	
 	def display(full = false)
-		puts "%s"   % @name
-		puts "  %s" % @complex_name   if full
-		puts "  %s" % @relative_href  if full
-		puts "  %s" % @href
-		puts "  %s" % @city
-		puts "  %s" % @sport
-		puts "  %s" % @season
-		puts "  %s" % @year
+		puts "%s"         % @name
+		puts "  %s"       % @complex_name   if full
+		puts "  %s"       % @relative_href  if full
+		puts "  %s"       % @href
+		puts "  %s"       % @city
+		puts "  %s"       % @sport
+		puts "  %s-%s"    % [@season, @year]
+		puts "  %d-%d-%d" % [@wins, @losses, @ties]
 	end
 end
 
