@@ -1,4 +1,5 @@
 require 'mechanize'
+require 'json'
 
 email = 'alpiepho@yahoo.com'
 password = 'jjjzzzkkk'
@@ -33,13 +34,16 @@ class Team
         # parse the params
 		@name = complex_name.gsub("Baseball", "").gsub("Softball", "").gsub("Fan", "").gsub("·", "").strip
 		@href = GC_BASE_URI + @relative_href
+		parts = relative_href.split("/")
+		parts = parts[2].split("-")
+		@season = parts[0].strip.capitalize
+		@year = parts[1].strip
 		
 		# get info from the team page
 		page = mechanize.get(@href)
-        puts "======================="
-        puts @name
-        puts "======================="
-        #pp page.body
+        #puts "======================="
+        #puts @name
+        #puts page.body
         
         # on team page, get city and sport that is shown under team name
         temp   = page.parser.css('.pll h2').text.gsub("\n", "").strip
@@ -50,19 +54,38 @@ class Team
         @city  = parts[0].strip if parts.length == 2  # normal display for teams
         @sport = parts[1].strip if parts.length == 2  # normal display for teams
         @sport = parts[0].strip if parts.length == 1  # tournaments don't show city
-		puts "%s" % @city
-		puts "%s" % @sport
 
+        # mechanize/nokogiri do NOT run javascript, but GC passes game summary data as a JSON string
+        # TODO: try watir or selenium to get html AFTER javascript???
+        temp = page.body                                           # get body as a string
+        json_encoded = temp.match(/ \$\.parseJSON.*$/)             # get the JSON data with GC game data
+        json_encoded = json_encoded.to_s                           # convert MatchData to a string
+        json_encoded = json_encoded.gsub("\\u0022", "\"")          # convert unicode quote
+        json_encoded = json_encoded.gsub("\\u002D", "-")           # convert unicode hyphen
+        json_encoded = json_encoded.gsub(" \$\.parseJSON(\'", "")  # remove leading cruft
+        #puts json_encoded
+        #puts ""
+        #puts ""
+        json_encoded = json_encoded.gsub("\'),", "")               # remove traikling cruft
+        #puts json_encoded
+        #puts ""
+        #puts ""
+        
+        json_decoded = JSON.parse json_encoded                     # conver to a hash
+        puts json_decoded
+        
+ 
 	end
 	
 	def display(full = false)
 		puts "%s"   % @name
 		puts "  %s" % @complex_name   if full
 		puts "  %s" % @relative_href  if full
-		puts "  %s" % @name
 		puts "  %s" % @href
 		puts "  %s" % @city
 		puts "  %s" % @sport
+		puts "  %s" % @season
+		puts "  %s" % @year
 	end
 end
 
@@ -97,9 +120,9 @@ end
 
 teams = []
 team_links.each do |link|
+    next if not (link.text.include?("Rough") or link.text.include?("Xplosion"))
     team = Team.new(mechanize, link.text, link.href)
     teams << team
-    #exit
 end
 
 dump_teams(teams)
