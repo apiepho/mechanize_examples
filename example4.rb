@@ -208,12 +208,14 @@ browser.form(:id,'frm_login').submit
 # go to teams page
 browser.goto(GC_TEAMS_URI)
 
-# team links have href that start with /t/ and include 
+# team links have href that includes /t/
 team_links = []
-browser.links.each do |link|
-    team_links << link if link.href.to_s.start_with?('/t/') and link.text.include?(' Fan ')
+browser.links.to_a.each do |link|
+    team_links << link.href if link.href.to_s.include?('/t/')
 end
+team_links = team_links.uniq
 pp team_links
+puts team_links.length
 
 
 
