@@ -1,5 +1,5 @@
-require 'mechanize'
 require 'json'
+require 'nokogiri'
 require 'watir'
 
 # TODO: pass is as params or config file
@@ -8,7 +8,8 @@ password     = 'jjjzzzkkk'
 
 GC_BASE_URI  = 'https://gc.com'
 GC_LOGIN_URI = GC_BASE_URI + '/login'
-GC_TEAMS_URI = GC_BASE_URI + '/teams?page_number=0&page_size=1000' # assume no one will follow more than 1000 teams
+# assume no one will follow more than 1000 teams
+GC_TEAMS_URI = GC_BASE_URI + '/teams?page_number=0&page_size=1000'
 
 class Game
     def initialize(mechanize, game_json)
@@ -83,30 +84,31 @@ end
 
 class Team
 
-	def initialize(mechanize, relative_href)
+	def initialize(browser, href)
 
-        # parse the team relative href
-		@href = GC_BASE_URI + relative_href
+        # parse the team href
 		# using http://rubular.com/ to figure out regex for something like
 		# "/t/spring-2016/roosevelt-rough-riders-varsity-56dfa90020277d0024b46bbb"
-		match = relative_href.match(/\/t\/([a-z]+)-([0-9]+)\/([a-z0-9-]+)-([a-z0-9]+\z)/).to_a
+		match = href.match(/\/t\/([a-z]+)-([0-9]+)\/([a-z0-9-]+)-([a-z0-9]+\z)/).to_a
 		# should produce:
 		# match[0] = /t/spring-2016/roosevelt-rough-riders-varsity-56dfa90020277d0024b46bbb
 		# match[1] = spring
 		# match[2] = 2016
 		# match[3] = roosevelt-rough-riders-varsity
 		# match[4] = 56dfa90020277d0024b46bbb
+		@href = href
 		@name   = match[3].gsub("-", " ").split.map{|i| i.capitalize}.join(' ')
 		@season = match[1].capitalize
 		@year   = match[2]
 		@guid   = match[4]
 		
 		# get the team page
-		page = mechanize.get(@href)
+		browser.goto(@href)
+		doc = Nokogiri::HTML(browser.html)
         
         # from team page, get city and sport that is shown under team name
-        temp   = page.parser.css('.pll h2').text.gsub("\n", "").strip
-        temp   = page.parser.css('.pll h3').text.gsub("\n", "").strip if temp.length == 0 # tournaments use h3
+        temp   = doc.css('.pll h2').text.gsub("\n", "").strip
+        temp   = doc.css('.pll h3').text.gsub("\n", "").strip if temp.length == 0 # tournaments use h3
         parts  = temp.split("·")
         @city  = "-"
         @sport = "-"
@@ -116,8 +118,8 @@ class Team
 
         # from team page, parse game summary
         # mechanize/nokogiri do NOT run javascript, but GC passes game summary data as a JSON string
-        # TODO: try watir or selenium to get html AFTER javascript???
-        temp = page.body                                           # get body as a string
+# TODO: try watir or selenium to get html AFTER javascript???
+        temp = browser.html                                        # get body as a string
         json_encoded = temp.match(/ \$\.parseJSON.*$/)             # get the JSON data with GC game data
         json_encoded = json_encoded.to_s                           # convert MatchData to a string
         json_encoded = json_encoded.gsub("\\u0022", "\"")          # convert unicode quote
@@ -163,40 +165,11 @@ def dump_teams(teams)
 	puts "total: %d" % teams.length
 end
 
-=begin
-# get a new instance of Mechanize class
-mechanize = Mechanize.new
 
-# login
-page = mechanize.get(GC_LOGIN_URI)
-form = page.forms.first
 
-form['email']    = email
-form['password'] = password
-form.submit
 
-# get teams
-page = mechanize.get(GC_TEAMS_URI)
-
-# team links have href that start with /t/ and include 
-team_links = []
-page.links.each do |link|
-    team_links << link if link.href.to_s.start_with?('/t/') and link.text.include?(' Fan ')
-end
-
-teams = []
-team_links.each do |link|
-# debug, limit teams
-#next if not (link.text.include?("Rough") or link.text.include?("Xplosion")) 
-next if not (link.text.include?("Rough"))
-    team = Team.new(mechanize, link.href)
-    teams << team
-end
-
-dump_teams(teams)
-=end
-
-# get a new instance of Watir class (NOTE: need chromedriver in path, get from https://sites.google.com/a/chromium.org/chromedriver/downloads)
+# get a new instance of Watir class (NOTE: need chromedriver in path, 
+# get chromedriver from https://sites.google.com/a/chromium.org/chromedriver/downloads)
 browser = Watir::Browser.new
 
 # login
@@ -214,8 +187,16 @@ browser.links.to_a.each do |link|
     team_links << link.href if link.href.to_s.include?('/t/')
 end
 team_links = team_links.uniq
-pp team_links
-puts team_links.length
 
+teams = []
+team_links.each do |link|
+# debug, limit teams
+#next if not (link.include?("rough") or link.include?("xplosion")) 
+next if not (link.include?("rough"))
+    team = Team.new(browser, link)
+    teams << team
+end
+
+dump_teams(teams)
 
 
