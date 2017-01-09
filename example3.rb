@@ -52,6 +52,25 @@ class Game
  "minutes_before"=>0,
  "other_team_name"=>"Eaton"}
 =end
+#https://gc.com/game-573728119d8c193d4f000188/plays
+        uri = GC_BASE_URI + "/game-" + @json["game_id"] + "/pays"
+		page = mechanize.get(uri)
+#puts page.body
+        temp = page.body                                           # get body as a string
+        json_encoded = temp.match(/initialize\(\$\.parseJSON.*$/)  # get the JSON data with GC game data
+        json_encoded = json_encoded.to_s                           # convert MatchData to a string
+        json_encoded = json_encoded.gsub("\\u0022", "\"")          # convert unicode quote
+        json_encoded = json_encoded.gsub("\\u002D", "-")           # convert unicode hyphen
+        json_encoded = json_encoded.gsub("initialize\(\$\.parseJSON\(\"", "")  # remove leading cruft
+        json_encoded = json_encoded.gsub("\"\), \$\(\'body\'\)\);", "")          # remove trailing cruft
+#        puts json_encoded
+        puts ""
+        puts ""
+        json_decoded = JSON.parse json_encoded                     # conver to a hash
+        pp json_decoded
+        #initialize($.parseJSON("
+        #"), $('body'));
+#page.initialize($.parseJSON("
     end
     
     def display
@@ -103,7 +122,7 @@ class Team
         json_encoded = json_encoded.gsub("\\u0022", "\"")          # convert unicode quote
         json_encoded = json_encoded.gsub("\\u002D", "-")           # convert unicode hyphen
         json_encoded = json_encoded.gsub(" \$\.parseJSON(\'", "")  # remove leading cruft
-        json_encoded = json_encoded.gsub("\'),", "")               # remove traikling cruft
+        json_encoded = json_encoded.gsub("\'),", "")               # remove trailing cruft
         json_decoded = JSON.parse json_encoded                     # conver to a hash
 
         # from json game summary, compute W-L-T record and build list of Games
@@ -116,6 +135,8 @@ class Team
 			@losses += 1 if game_json["result"] === "L"
 			@ties   += 1 if game_json["result"] === "T"
 			@games << Game.new(mechanize, game_json)
+# debug, limit games
+break
         end        
  
 	end
@@ -163,7 +184,9 @@ end
 
 teams = []
 team_links.each do |link|
-    next if not (link.text.include?("Rough") or link.text.include?("Xplosion")) # debug, limit teams
+# debug, limit teams
+#next if not (link.text.include?("Rough") or link.text.include?("Xplosion")) 
+next if not (link.text.include?("Rough"))
     team = Team.new(mechanize, link.href)
     teams << team
 end
