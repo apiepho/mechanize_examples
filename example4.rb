@@ -14,9 +14,13 @@ GC_LOGIN_URI = GC_BASE_URI + '/login'
 # NOTE: since we are parsong json instead of html, don't need to set page_size
 GC_TEAMS_URI = GC_BASE_URI + '/teams'
 
+$total_teams = 0
+$total_games = 0
+
 class Game
     def initialize(browser, game_json)
-    @json = game_json
+$total_games += 1
+    	@json = game_json
 # example game_json, one element from team json data
 =begin
 {"home_won"=>false,
@@ -61,10 +65,12 @@ class Game
 		browser.goto(uri)
 		
         # get body as a string
+        count = 0
         begin
     		sleep 1
+    		count += 1
             temp = browser.html
-        end until temp.include?("\"inning_half")
+        end until temp.include?(" inning_1_half_0 \"") or count > 30
 =begin
         json_encoded = temp.match(/initialize\(\$\.parseJSON.*$/)              # get the JSON data with GC game data
         json_encoded = json_encoded.to_s                                       # convert MatchData to a string
@@ -87,6 +93,7 @@ end
 class Team
 
 	def initialize(browser, href)
+$total_teams += 1
 
         # parse the team href
 		# using http://rubular.com/ to figure out regex for something like
@@ -144,8 +151,8 @@ class Team
         # from json game summary,  build list of Games
         @games = []
         json_decoded.each do |game_json|
-			@games << Game.new(browser, game_json)
-# debug, limit games
+			@games << Game.new(browser, game_json) if not game_json.nil? and not game_json["game_id"].nil?
+#debug-limit games
 #break
         end        
  
@@ -169,7 +176,6 @@ def dump_teams(teams)
 	teams.each do |team|
 	  team.display
 	end
-	puts "total: %d" % teams.length
 end
 
 
@@ -197,15 +203,14 @@ team_links = team_links.uniq
 
 teams = []
 team_links.each do |link|
-# debug, limit teams
-#next if not (link.include?("rough") or link.include?("xplosion")) 
-next if not (link.include?("rough"))
+#debug-limit teams
+#next if not (link.include?("rough"))
     team = Team.new(browser, link)
     teams << team
 end
 
 dump_teams(teams)
-puts "done, waiting 5 seconds"
-sleep 5
+puts $total_teams
+puts $total_games
 
 
