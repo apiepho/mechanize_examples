@@ -1,5 +1,6 @@
 require 'json'
 require 'nokogiri'
+require 'pp'
 require 'watir'
 
 # TODO: pass is as params or config file
@@ -9,12 +10,14 @@ password     = 'jjjzzzkkk'
 GC_BASE_URI  = 'https://gc.com'
 GC_LOGIN_URI = GC_BASE_URI + '/login'
 # assume no one will follow more than 1000 teams
-GC_TEAMS_URI = GC_BASE_URI + '/teams?page_number=0&page_size=1000'
+#GC_TEAMS_URI = GC_BASE_URI + '/teams?page_number=0&page_size=1000'
+# NOTE: since we are parsong json instead of html, don't need to set page_size
+GC_TEAMS_URI = GC_BASE_URI + '/teams'
 
 class Game
-    def initialize(mechanize, game_json)
+    def initialize(browser, game_json)
     @json = game_json
-# example game_json
+# example game_json, one element from team json data
 =begin
 {"home_won"=>false,
  "away_won"=>true,
@@ -54,25 +57,24 @@ class Game
  "minutes_before"=>0,
  "other_team_name"=>"Eaton"}
 =end
-#https://gc.com/game-573728119d8c193d4f000188/plays
-        uri = GC_BASE_URI + "/game-" + @json["game_id"] + "/pays"
-		page = mechanize.get(uri)
-#puts page.body
-        temp = page.body                                           # get body as a string
-        json_encoded = temp.match(/initialize\(\$\.parseJSON.*$/)  # get the JSON data with GC game data
-        json_encoded = json_encoded.to_s                           # convert MatchData to a string
-        json_encoded = json_encoded.gsub("\\u0022", "\"")          # convert unicode quote
-        json_encoded = json_encoded.gsub("\\u002D", "-")           # convert unicode hyphen
+        uri = GC_BASE_URI + "/game-" + @json["game_id"] + "/plays"
+		browser.goto(uri)
+		
+        # get body as a string
+        begin
+    		sleep 1
+            temp = browser.html
+        end until temp.include?("\"inning_half")
+=begin
+        json_encoded = temp.match(/initialize\(\$\.parseJSON.*$/)              # get the JSON data with GC game data
+        json_encoded = json_encoded.to_s                                       # convert MatchData to a string
+        json_encoded = json_encoded.gsub("\\u0022", "\"")                      # convert unicode quote
+        json_encoded = json_encoded.gsub("\\u002D", "-")                       # convert unicode hyphen
         json_encoded = json_encoded.gsub("initialize\(\$\.parseJSON\(\"", "")  # remove leading cruft
-        json_encoded = json_encoded.gsub("\"\), \$\(\'body\'\)\);", "")          # remove trailing cruft
-#        puts json_encoded
-        puts ""
-        puts ""
-        json_decoded = JSON.parse json_encoded                     # conver to a hash
+        json_encoded = json_encoded.gsub("\"\), \$\(\'body\'\)\);", "")        # remove trailing cruft
+        json_decoded = JSON.parse json_encoded                                 # conver to a hash
         pp json_decoded
-        #initialize($.parseJSON("
-        #"), $('body'));
-#page.initialize($.parseJSON("
+=end
     end
     
     def display
@@ -104,9 +106,9 @@ class Team
 		
 		# get the team page
 		browser.goto(@href)
-		doc = Nokogiri::HTML(browser.html)
         
         # from team page, get city and sport that is shown under team name
+		doc = Nokogiri::HTML(browser.html)
         temp   = doc.css('.pll h2').text.gsub("\n", "").strip
         temp   = doc.css('.pll h3').text.gsub("\n", "").strip if temp.length == 0 # tournaments use h3
         parts  = temp.split("·")
@@ -118,7 +120,8 @@ class Team
 
         # from team page, parse game summary
         # mechanize/nokogiri do NOT run javascript, but GC passes game summary data as a JSON string
-# TODO: try watir or selenium to get html AFTER javascript???
+        # watir can get html AFTER javascript, but full set of team json if always give, so this
+        # way we don't need special uri for teams.
         temp = browser.html                                        # get body as a string
         json_encoded = temp.match(/ \$\.parseJSON.*$/)             # get the JSON data with GC game data
         json_encoded = json_encoded.to_s                           # convert MatchData to a string
@@ -132,14 +135,18 @@ class Team
         @wins   = 0
         @losses = 0
         @ties   = 0
-        @games = []
         json_decoded.each do |game_json|
 			@wins   += 1 if game_json["result"] === "W"
 			@losses += 1 if game_json["result"] === "L"
 			@ties   += 1 if game_json["result"] === "T"
-#			@games << Game.new(mechanize, game_json)
+        end        
+
+        # from json game summary,  build list of Games
+        @games = []
+        json_decoded.each do |game_json|
+			@games << Game.new(browser, game_json)
 # debug, limit games
-break
+#break
         end        
  
 	end
@@ -198,5 +205,7 @@ next if not (link.include?("rough"))
 end
 
 dump_teams(teams)
+puts "done, waiting 5 seconds"
+sleep 5
 
 
