@@ -3,9 +3,9 @@
 require './gc_common'
 
 class Game
-    attr_accessor :score_us, :score_them
+    #attr_accessor :score_us, :score_them
 
-	def initialize(browser, options, game_json)
+	def initialize(game_json)
 		# game data comes from game data json from specific team page (given parameter)
 		$total_games += 1
 
@@ -17,27 +17,27 @@ class Game
 		# get game plays
 		# TODO: refactor into gc_plays.rb
 		uri = GC_PLAYS_URI % + @json["game_id"]
-		puts "getting %s ..." % uri if options.debug
-		browser.goto(uri)
+		puts "getting %s ..." % uri if $options.debug
+		$browser.goto(uri)
       
 		# get body as a string, waiting for javascript to finish populating
-		temp = browser.html
+		temp = $browser.html
     	seconds = 0
     	while not temp.include?(" inning_1_half_0 \"") and seconds < 30 do
         	sleep(1)
 			seconds += 1
-			puts seconds if options.debug
-        	temp = browser.html
+			puts seconds if $options.debug
+        	temp = $browser.html
 		end
 =begin
-	json_encoded = temp.match(/initialize\(\$\.parseJSON.*$/)              # get the JSON data with GC game data
-	json_encoded = json_encoded.to_s                                       # convert MatchData to a string
-	json_encoded = json_encoded.gsub("\\u0022", "\"")                      # convert unicode quote
-	json_encoded = json_encoded.gsub("\\u002D", "-")                       # convert unicode hyphen
-	json_encoded = json_encoded.gsub("initialize\(\$\.parseJSON\(\"", "")  # remove leading cruft
-	json_encoded = json_encoded.gsub("\"\), \$\(\'body\'\)\);", "")        # remove trailing cruft
-	json_decoded = JSON.parse json_encoded                                 # conver to a hash
-	pp json_decoded
+		json_encoded = temp.match(/initialize\(\$\.parseJSON.*$/)              # get the JSON data with GC game data
+		json_encoded = json_encoded.to_s                                       # convert MatchData to a string
+		json_encoded = json_encoded.gsub("\\u0022", "\"")                      # convert unicode quote
+		json_encoded = json_encoded.gsub("\\u002D", "-")                       # convert unicode hyphen
+		json_encoded = json_encoded.gsub("initialize\(\$\.parseJSON\(\"", "")  # remove leading cruft
+		json_encoded = json_encoded.gsub("\"\), \$\(\'body\'\)\);", "")        # remove trailing cruft
+		json_decoded = JSON.parse json_encoded                                 # conver to a hash
+		pp json_decoded
 =end
 end
     
@@ -93,8 +93,8 @@ end
 
 		puts "    %s %s" % [at_vs, @json["other_team_name"]]
 		puts "      %s" % @json["utc_start"]
-		#puts "      game_id:  %s" % @json["game_id"]
-		puts "      location: %s" % (@json["location"].empty? ? "-" : @json["location"])
+		puts "      game_id:  %s" % @json["game_id"] if $options.debug
+		puts "      location: %s" % (@json["location"].nil? ? "-" : @json["location"])
 		puts "      us:       %s" % @score_us
 		puts "      them:     %s" % @score_them
 		puts "      result:   %s" % win_lose_tie

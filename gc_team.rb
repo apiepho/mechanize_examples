@@ -6,7 +6,7 @@ require './gc_roster'
 
 class Team
 
-	def initialize(browser, options, href)
+	def initialize(href)
 		# team data comes from 2 parts:
 		# 1. data gleened from the specific team page href (given parameter)
 		# 2. data from the specfic team page
@@ -31,15 +31,15 @@ class Team
         # get roster
         # counter intuitive to get roster before team, but team page consists mainly of
         # games data
-        @roster = Roster.new(browser, options, @href)                
+        @roster = Roster.new(@href)                
         
 		# get the team page to get game record and game json data
 		# TODO: should this be refactored as gc_games.rb??
-		puts "getting %s ..." % @href if options.debug
-		browser.goto(@href)
+		puts "getting %s ..." % @href if $options.debug
+		$browser.goto(@href)
         
 		# from team page, get city and sport that is shown under team name
-		doc = Nokogiri::HTML(browser.html)
+		doc = Nokogiri::HTML($browser.html)
 		temp   = doc.css('.pll h2').text.gsub("\n", "").strip
 		temp   = doc.css('.pll h3').text.gsub("\n", "").strip if temp.length == 0 # tournaments use h3
 		parts  = temp.split("·")
@@ -53,7 +53,7 @@ class Team
 		# mechanize/nokogiri do NOT run javascript, but GC passes game summary data as a JSON string
 		# watir can get html AFTER javascript, but full set of team json if always give, so this
 		# way we don't need special uri for teams.
-		temp = browser.html                                        # get body as a string
+		temp = $browser.html                                        # get body as a string
 		json_encoded = temp.match(/ \$\.parseJSON.*$/)             # get the JSON data with GC game data
 		json_encoded = json_encoded.to_s                           # convert MatchData to a string
 		json_encoded = json_encoded.gsub("\\u0022", "\"")          # convert unicode quote
@@ -75,17 +75,17 @@ class Team
 		# from json game summary,  build list of Games
 		@games = []
 		json_decoded.each do |game_json|
-			next if not supported_game(options, game_json)
-			@games << Game.new(browser, options, game_json)
+			next if not supported_game(game_json)
+			@games << Game.new(game_json)
 		end
 		# games are listed in newest first
         @games = @games.reverse
  
 	end
    
-	def supported_game(options, game_json)
+	def supported_game(game_json)
 		result = true
-     	result = false if not options.games.nil? and @games.length >= options.games.to_i
+     	result = false if not $options.games.nil? and @games.length >= $options.games.to_i
         result = false if game_json.nil? or game_json["game_id"].nil?
         result
 	end
@@ -93,7 +93,7 @@ class Team
 	def display
 		puts "%s"         % @name
 		puts "  %s"       % @href
-		#puts "  %s"       % @guid
+		puts "  %s"       % @guid if $options.debug
 		puts "  %s"       % @city
 		puts "  %s"       % @sport
 		puts "  %s-%s"    % [@season, @year]
