@@ -23,6 +23,7 @@ class Game
 		$total_games += 1
 		@json = game_json
 		uri = GC_BASE_URI + "/game-" + @json["game_id"] + "/plays"
+		puts "getting %s ..." % uri
 		browser.goto(uri)
       
 		# get body as a string, waiting for javascript to finish populating
@@ -135,6 +136,7 @@ class Team
 		@guid   = match[4]
       
 		# get the team page
+		puts "getting %s ..." % @href
 		browser.goto(@href)
         
 		# from team page, get city and sport that is shown under team name
@@ -250,12 +252,14 @@ browser = Watir::Browser.new
 
 # login
 browser.goto(GC_LOGIN_URI)
+puts "getting %s ..." % GC_LOGIN_URI
 browser.text_field(:id,'email').set(options.email)
 browser.text_field(:id,'login_password').set(options.password)
 browser.form(:id,'frm_login').submit
 
 # go to teams page
 browser.goto(GC_TEAMS_URI)
+puts "getting %s ..." % GC_TEAMS_URI
 
 # team links have href that includes /t/
 team_links = []
