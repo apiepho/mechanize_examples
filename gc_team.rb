@@ -1,16 +1,15 @@
+# TODO: add copyright header
+
 require './gc_common'
 require './gc_game'
+require './gc_roster'
 
 class Team
 
-	def supported_game(options, game_json)
-		result = true
-     	result = false if not options.games.nil? and @games.length >= options.games.to_i
-        result = false if game_json.nil? or game_json["game_id"].nil?
-        result
-	end
-
 	def initialize(browser, options, href)
+		# team data comes from 2 parts:
+		# 1. data gleened from the specific team page href (given parameter)
+		# 2. data from the specfic team page
 		$total_teams += 1
 
 		# parse the team href
@@ -29,7 +28,13 @@ class Team
 		@year   = match[2]
 		@guid   = match[4]
       
-		# get the team page
+        # get roster
+        # counter intuitive to get roster before team, but team page consists mainly of
+        # games data
+        @roster = Roster.new(browser, options, @href)                
+        
+		# get the team page to get game record and game json data
+		# TODO: should this be refactored as gc_games.rb??
 		puts "getting %s ..." % @href if options.debug
 		browser.goto(@href)
         
@@ -78,6 +83,13 @@ class Team
  
 	end
    
+	def supported_game(options, game_json)
+		result = true
+     	result = false if not options.games.nil? and @games.length >= options.games.to_i
+        result = false if game_json.nil? or game_json["game_id"].nil?
+        result
+	end
+
 	def display
 		puts "%s"         % @name
 		puts "  %s"       % @href
@@ -86,6 +98,7 @@ class Team
 		puts "  %s"       % @sport
 		puts "  %s-%s"    % [@season, @year]
 		puts "  %d-%d-%d" % [@wins, @losses, @ties]
+		@roster.display
 		@games.each do |game|
 			game.display
 		end

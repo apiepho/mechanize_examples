@@ -2,7 +2,7 @@
 
 require './gc_common'
 
-class Game
+class Player
     attr_accessor :score_us, :score_them
 
 	def initialize(browser, options, game_json)
