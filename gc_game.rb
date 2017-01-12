@@ -1,6 +1,7 @@
 # TODO: add copyright header
 
 require './gc_common'
+require 'date'
 
 class Game
     #attr_accessor :score_us, :score_them
@@ -83,6 +84,7 @@ end
  "other_team_name"=>"Eaton"}
 =end
         at_vs        = (@json["home"] === "home" ? "vs" : "at")
+        date         = DateTime.parse(@json["utc_start"])
 		win_lose_tie = "win"   if (@json["result"] === "W")
 		win_lose_tie = "loss"  if (@json["result"] === "L")
 		win_lose_tie = "tie"   if (@json["result"] === "T")
@@ -92,7 +94,7 @@ end
         @score_them  = (@json["home"] ? score_away : score_home)
 
 		puts "    %s %s" % [at_vs, @json["other_team_name"]]
-		puts "      %s" % @json["utc_start"]
+		puts "      %s" % date.strftime("%A, %b %d %Y %l:%M %p")
 		puts "      game_id:  %s" % @json["game_id"] if $options.debug
 		puts "      location: %s" % (@json["location"].nil? ? "-" : @json["location"])
 		puts "      us:       %s" % @score_us
