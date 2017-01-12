@@ -30,17 +30,14 @@ class Game
 			puts seconds if $options.debug
         	temp = $browser.html
 		end
-=begin
-		json_encoded = temp.match(/initialize\(\$\.parseJSON.*$/)              # get the JSON data with GC game data
-		json_encoded = json_encoded.to_s                                       # convert MatchData to a string
-		json_encoded = json_encoded.gsub("\\u0022", "\"")                      # convert unicode quote
-		json_encoded = json_encoded.gsub("\\u002D", "-")                       # convert unicode hyphen
-		json_encoded = json_encoded.gsub("initialize\(\$\.parseJSON\(\"", "")  # remove leading cruft
-		json_encoded = json_encoded.gsub("\"\), \$\(\'body\'\)\);", "")        # remove trailing cruft
-		json_decoded = JSON.parse json_encoded                                 # conver to a hash
-		pp json_decoded
-=end
-end
+		doc = Nokogiri::HTML($browser.html)
+		inning_halfs   = doc.css('.inning_half')
+        puts inning_halfs.length
+        inning_halfs.each do |inning_half|
+            puts inning_half.values
+        end
+exit
+    end
     
 	def display
 =begin
