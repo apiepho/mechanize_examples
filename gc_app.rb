@@ -4,10 +4,12 @@ require './gc_common'
 require './gc_teams'
 
 # TODO: Summary list of TODO items
+# - parse pitches including type (pitch, event-lineup, event-walk, event-out + play, event-scored + play, event + play)
+# - parse/add play with reference to players involved, display play short cut ie. 6-4-3
 # - parse plate appearences and plays
 # - parse lines-ups from game data as gc_lineups.rb
 # - parse GC stats if available
-# - save to file option
+# - save to file option (no html or json, if there is info needed, it must be parsed)
 # - restore from file option
 # - clean up display of details
 # - start generation of stats
@@ -15,7 +17,6 @@ require './gc_teams'
 # - add copyright to header of all files
 # - merge duplicate players in roster.rb
 # - remove global team counts etc, post calculate with display?
-# - track running score in plate appearences
 
 
 # parse command line options

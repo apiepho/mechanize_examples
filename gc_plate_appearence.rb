@@ -4,6 +4,7 @@ require './gc_common'
 require './gc_pitch'
 
 class PlateAppearence
+    attr_reader :score_away, :score_home
 
 	def initialize(plate_appearence_xml_element)
 		@xml_element = plate_appearence_xml_element
@@ -20,6 +21,12 @@ class PlateAppearence
             @pitches << Pitch.new(xml_element)
         end
         @pitches = @pitches.reverse
+
+        # parse running score
+		xml_elements = @xml_element.css('.scoreColumn')
+puts xml_elements
+        @score_away = xml_elements[0].inner_text.to_i
+        @score_home = xml_elements[1].inner_text.to_i
 	end
     
 	def display
@@ -48,11 +55,12 @@ class PlateAppearence
 <td class="centerAlign scoreColumn ptm">9</td>
 </tr>
 =end
-		#puts @xml_element
+		puts "        pitches:"
 		@pitches.each do |pitch|
 			pitch.display
 		end
-		puts "        pitches: %d" % @pitches.length
+		puts "        pitches total: %d" % @pitches.length
+		puts "        running score: %2d %2d" % [@score_away, @score_home]
 	end
 end
 

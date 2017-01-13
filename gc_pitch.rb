@@ -14,6 +14,9 @@ class Pitch
 		@description = @xml_element.css('.event_description', '.pitch_description').inner_text.strip
 	end
     
+    def pitch?
+    end
+
 	def display
 =begin
 examples of pitch_xml_element:
@@ -48,7 +51,7 @@ examples of pitch_xml_element:
     </span>
 </li>
 =end
-		puts "          %s" % @description
+		puts "            %s" % @description
 	end
 end
 
