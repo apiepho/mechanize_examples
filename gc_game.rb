@@ -3,7 +3,7 @@
 require 'date'
 
 require './gc_common'
-require './gc_inning_half'
+require './gc_innings'
 
 class Game
     #attr_accessor :score_us, :score_them
@@ -37,11 +37,7 @@ class Game
 		xml_elements = xml_elements.reverse
 
 		# build list of inning halfs
-		@inning_halfs = []
-        xml_elements.each do |xml_element|
-			next if not $options.halfs.nil? and @inning_halfs.length >= $options.halfs.to_i
-            @inning_halfs << InningHalf.new(xml_element)
-        end
+		@inning_halfs = Innings.new(xml_elements)
     end
     
 	def display
@@ -104,12 +100,7 @@ class Game
 		puts "%s%s%s"    % [ $indent.str, "them:     ", @score_them ]
 		puts "%s%s%s"    % [ $indent.str, "result:   ", win_lose_tie ]
 		puts "%s%s%s"    % [ $indent.str, "recap:    ", @json["recap_title"] ]
-		puts "%s%s"      % [ $indent.str, "game details:" ]
-        $indent.increase
-		@inning_halfs.each do |inning_half|
-			inning_half.display
-		end
-        $indent.decrease
+		@inning_halfs.display
         $indent.decrease
 	end
 end

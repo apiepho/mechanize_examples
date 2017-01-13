@@ -1,7 +1,7 @@
 # add copyright header
 
 require './gc_common'
-require './gc_game'
+require './gc_games'
 require './gc_roster'
 
 class Team
@@ -59,7 +59,8 @@ class Team
 		json_encoded = json_encoded.gsub("\\u002D", "-")           # convert unicode hyphen
 		json_encoded = json_encoded.gsub(" \$\.parseJSON(\'", "")  # remove leading cruft
 		json_encoded = json_encoded.gsub("\'),", "")               # remove trailing cruft
-		json_decoded = JSON.parse json_encoded                     # conver to a hash
+		json_decoded = JSON.parse json_encoded                     # conver to a hash		
+		json_decoded = json_decoded.reverse                        # games are listed in newest first
 
 		# from json game summary, compute W-L-T record and build list of Games
 		@wins   = 0
@@ -72,14 +73,7 @@ class Team
 		end        
 
 		# from json game summary,  build list of Games
-		@games = []
-		json_decoded.each do |game_json|
-			next if not supported_game(game_json)
-			@games << Game.new(game_json)
-		end
-		# games are listed in newest first
-        @games = @games.reverse
- 
+		@games = Games.new(json_decoded)
 	end
    
 	def supported_game(game_json)
@@ -99,12 +93,7 @@ class Team
 		puts "%s%s-%s"     % [ $indent.str, @season, @year ]
 		puts "%s%d-%d-%d"  % [ $indent.str, @wins, @losses, @ties ]
 		@roster.display
-		puts "%s%s"        % [ $indent.str, "games:" ]
-        $indent.increase
-		@games.each do |game|
-			game.display
-		end
-        $indent.decrease
+		@games.display
         $indent.decrease
 	end
 end
