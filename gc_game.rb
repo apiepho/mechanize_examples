@@ -1,7 +1,9 @@
-# TODO: add copyright header
+# add copyright header
+
+require 'date'
 
 require './gc_common'
-require 'date'
+require './gc_inning_half'
 
 class Game
     #attr_accessor :score_us, :score_them
@@ -13,10 +15,8 @@ class Game
 		@json = game_json
 
 		# get game lineups
-		# TODO: refactor into gc_lineups.rb
 				
-		# get game plays
-		# TODO: refactor into gc_plays.rb
+		# get game plays page
 		uri = GC_PLAYS_URI % + @json["game_id"]
 		puts "getting %s ..." % uri if $options.debug
 		$browser.goto(uri)
@@ -30,13 +30,18 @@ class Game
 			puts seconds if $options.debug
         	temp = $browser.html
 		end
-		doc = Nokogiri::HTML($browser.html)
-		inning_halfs   = doc.css('.inning_half')
-        puts inning_halfs.length
-        inning_halfs.each do |inning_half|
-            puts inning_half.values
+
+		# parse html with Nokogiri		
+		doc = Nokogiri::HTML(temp)
+		xml_elements = doc.css('.inning_half')
+		xml_elements = xml_elements.reverse
+
+		# build list of inning halfs
+		@inning_halfs = []
+        xml_elements.each do |xml_element|
+			next if not $options.halfs.nil? and @inning_halfs.length >= $options.halfs.to_i
+            @inning_halfs << InningHalf.new(xml_element)
         end
-exit
     end
     
 	def display
@@ -98,6 +103,10 @@ exit
 		puts "      them:     %s" % @score_them
 		puts "      result:   %s" % win_lose_tie
 		puts "      recap:    %s" % @json["recap_title"]
+		puts "      game details:"
+		@inning_halfs.each do |inning_half|
+			inning_half.display
+		end
 	end
 end
 

@@ -1,4 +1,4 @@
-# TODO: add copyright header
+# add copyright header
 
 require './gc_common'
 require './gc_player'
@@ -24,10 +24,11 @@ class Roster
 
 		@players = []
 		json_decoded["roster"].each do |player_json|
+			next if not $options.roster.nil? and @players.length >= $options.roster.to_i
 			@players << Player.new(player_json)
 		end
 		
-		# TODO: merge duplicate players
+		# merge duplicate players
 	end
 
 

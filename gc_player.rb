@@ -1,4 +1,4 @@
-# TODO: add copyright header
+# add copyright header
 
 require './gc_common'
 

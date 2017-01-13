@@ -1,4 +1,4 @@
-# TODO: add copyright header
+# add copyright header
 
 require './gc_common'
 require './gc_game'
@@ -34,7 +34,6 @@ class Team
         @roster = Roster.new(@href)                
         
 		# get the team page to get game record and game json data
-		# TODO: should this be refactored as gc_games.rb??
 		puts "getting %s ..." % @href if $options.debug
 		$browser.goto(@href)
         
@@ -98,7 +97,9 @@ class Team
 		puts "  %s"       % @sport
 		puts "  %s-%s"    % [@season, @year]
 		puts "  %d-%d-%d" % [@wins, @losses, @ties]
+		puts "  roster:"
 		@roster.display
+		puts "  games:"
 		@games.each do |game|
 			game.display
 		end
