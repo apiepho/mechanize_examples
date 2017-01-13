@@ -15,6 +15,7 @@ require './gc_teams'
 # - add copyright to header of all files
 # - merge duplicate players in roster.rb
 # - remove global team counts etc, post calculate with display?
+# - track running score in plate appearences
 
 
 # parse command line options
@@ -43,7 +44,9 @@ end
 
 # get a new instance of Watir class (NOTE: need chromedriver in path, 
 # get chromedriver from https://sites.google.com/a/chromium.org/chromedriver/downloads)
-$browser = Watir::Browser.new
+$browser = Watir::Browser.new(:chrome)
+$browser.window.resize_to(1200, 600)
+#$browser.window.move_to(100, 100)
 
 # login
 $browser.goto(GC_LOGIN_URI)

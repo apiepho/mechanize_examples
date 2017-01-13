@@ -1,6 +1,7 @@
 # add copyright header
 
 require './gc_common'
+require './gc_pitch'
 
 class PlateAppearence
 
@@ -16,8 +17,9 @@ class PlateAppearence
 		@pitches = []
         xml_elements.each do |xml_element|
 			next if not $options.pitches.nil? and @pitches.length >= $options.pitches.to_i
-#            @pitches << Pitch.new(xml_element)
+            @pitches << Pitch.new(xml_element)
         end
+        @pitches = @pitches.reverse
 	end
     
 	def display
@@ -46,8 +48,11 @@ class PlateAppearence
 <td class="centerAlign scoreColumn ptm">9</td>
 </tr>
 =end
-		puts @xml_element
-		puts "pitches: %d" % @pitches.length
+		#puts @xml_element
+		@pitches.each do |pitch|
+			pitch.display
+		end
+		puts "        pitches: %d" % @pitches.length
 	end
 end
 

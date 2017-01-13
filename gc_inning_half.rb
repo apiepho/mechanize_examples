@@ -28,7 +28,7 @@ class InningHalf
 ...
 </tbody>
 =end
-		puts @xml_element.values
+		puts "        %s" % @xml_element.values
 		@plate_appearences.each do |plate_appearence|
 			plate_appearence.display
 		end
