@@ -25,11 +25,11 @@ class Player
     "player_id"=>"56e4392543ee3f00211cb670",
     "wall_advice"=>[]},
 =end
-		puts "    %s" % @json["formatted_name"]
-		puts "      player_id:   %s" % @json["player_id"] if $options.debug
-		puts "      number:      %s" % (@json["num"].nil? ? "-" : @json["num"])
-		puts "      throws:      %s" % (@json["t"].nil? ? "-" : @json["t"])
-		puts "      bats:        %s" % (@json["b"].nil? ? "-" : @json["b"])
+		puts "%s%s"   % [ $indent.str, @json["formatted_name"] ]
+		puts "%s%s%s" % [ $indent.str, "player_id:   ", @json["player_id"] ] if $options.debug
+		puts "%s%s%s" % [ $indent.str, "number:      ", (@json["num"].nil? ? "-" : @json["num"]) ]
+		puts "%s%s%s" % [ $indent.str, "throws:      ", (@json["t"].nil? ? "-" : @json["t"]) ]
+		puts "%s%s%s" % [ $indent.str, "bats:        ", (@json["b"].nil? ? "-" : @json["b"]) ]
 		pos_str = ""
 		if not @json["pos"].empty?
 			@json["pos"].each do |pos|
@@ -37,7 +37,7 @@ class Player
 				pos_str += " "
 			end
 		end
-		puts "      position(s): %s" % pos_str
+		puts "%s%s%s" % [ $indent.str, "position(s): ", pos_str ]
 	end
 end
 

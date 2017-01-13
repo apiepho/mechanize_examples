@@ -24,7 +24,6 @@ class PlateAppearence
 
         # parse running score
 		xml_elements = @xml_element.css('.scoreColumn')
-puts xml_elements
         @score_away = xml_elements[0].inner_text.to_i
         @score_home = xml_elements[1].inner_text.to_i
 	end
@@ -55,12 +54,14 @@ puts xml_elements
 <td class="centerAlign scoreColumn ptm">9</td>
 </tr>
 =end
-		puts "        pitches:"
+		puts "%s%s" % [ $indent.str, "pitches:" ]
+        $indent.increase
 		@pitches.each do |pitch|
 			pitch.display
 		end
-		puts "        pitches total: %d" % @pitches.length
-		puts "        running score: %2d %2d" % [@score_away, @score_home]
+        $indent.decrease
+		puts "%s%s%d"      % [ $indent.str, "pitches total: ", @pitches.length ]
+		puts "%s%s%2d %2d" % [ $indent.str, "running score: ", @score_away, @score_home ]
 	end
 end
 

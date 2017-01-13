@@ -27,7 +27,7 @@ class Game
     	while not temp.include?(" inning_1_half_0 \"") and seconds < 30 do
         	sleep(1)
 			seconds += 1
-			puts seconds if $options.debug
+			puts "." if $options.debug
         	temp = $browser.html
 		end
 
@@ -95,18 +95,22 @@ class Game
         @score_us    = (@json["home"] ? score_home : score_away)
         @score_them  = (@json["home"] ? score_away : score_home)
 
-		puts "    %s %s" % [at_vs, @json["other_team_name"]]
-		puts "      %s" % date.strftime("%A, %b %d %Y %l:%M %p")
-		puts "      game_id:  %s" % @json["game_id"] if $options.debug
-		puts "      location: %s" % (@json["location"].nil? ? "-" : @json["location"])
-		puts "      us:       %s" % @score_us
-		puts "      them:     %s" % @score_them
-		puts "      result:   %s" % win_lose_tie
-		puts "      recap:    %s" % @json["recap_title"]
-		puts "      game details:"
+		puts "%s%s %s" % [ $indent.str, at_vs, @json["other_team_name"] ]
+        $indent.increase
+		puts "%s%s"      % [ $indent.str, date.strftime("%A, %b %d %Y %l:%M %p") ]
+		puts "%s%s%s"    % [ $indent.str, "game_id:  ", @json["game_id"] ] if $options.debug
+		puts "%s%s%s"    % [ $indent.str, "location: ", (@json["location"].nil? ? "-" : @json["location"]) ]
+		puts "%s%s%s"    % [ $indent.str, "us:       ", @score_us ]
+		puts "%s%s%s"    % [ $indent.str, "them:     ", @score_them ]
+		puts "%s%s%s"    % [ $indent.str, "result:   ", win_lose_tie ]
+		puts "%s%s%s"    % [ $indent.str, "recap:    ", @json["recap_title"] ]
+		puts "%s%s"      % [ $indent.str, "game details:" ]
+        $indent.increase
 		@inning_halfs.each do |inning_half|
 			inning_half.display
 		end
+        $indent.decrease
+        $indent.decrease
 	end
 end
 

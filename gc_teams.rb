@@ -55,8 +55,8 @@ class Teams
 		@teams.each do |team|
 			team.display
 		end
-		puts $total_teams
-		puts $total_players
-		puts $total_games
+#		puts $total_teams
+#		puts $total_players
+#		puts $total_games
 	end
 end

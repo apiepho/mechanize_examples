@@ -28,10 +28,13 @@ class InningHalf
 ...
 </tbody>
 =end
-		puts "        %s" % @xml_element.values
+        inning_half_str = @xml_element.values.join(" ").split(" ").join(", ")
+		puts "%s%s" % [ $indent.str, inning_half_str ]
+        $indent.increase
 		@plate_appearences.each do |plate_appearence|
 			plate_appearence.display
 		end
+        $indent.decrease
 	end
 end
 

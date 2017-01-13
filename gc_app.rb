@@ -17,6 +17,8 @@ require './gc_teams'
 # - add copyright to header of all files
 # - merge duplicate players in roster.rb
 # - remove global team counts etc, post calculate with display?
+# - do we need a games class instead of holding @games in team?
+# - do we need an innings class instead of holding inning_halfs in game?
 
 
 # parse command line options
@@ -58,4 +60,7 @@ $browser.form(:id,'frm_login').submit
 
 # build teams
 teams = Teams.new()
+
+puts "Results from parsing..."
+$indent = Indent.new
 teams.display()

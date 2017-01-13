@@ -51,7 +51,7 @@ examples of pitch_xml_element:
     </span>
 </li>
 =end
-		puts "            %s" % @description
+		puts "%s%s" % [ $indent.str, @description ]
 	end
 end
 

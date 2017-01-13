@@ -33,9 +33,12 @@ class Roster
 
 
 	def display()
+		puts "%s%s" % [$indent.str, "roster:"]
+        $indent.increase
 		@players.each do |player|
 			player.display
 		end
+        $indent.decrease
 	end
 end
 

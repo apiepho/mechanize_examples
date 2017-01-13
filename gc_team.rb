@@ -90,19 +90,22 @@ class Team
 	end
 
 	def display
-		puts "%s"         % @name
-		puts "  %s"       % @href
-		puts "  %s"       % @guid if $options.debug
-		puts "  %s"       % @city
-		puts "  %s"       % @sport
-		puts "  %s-%s"    % [@season, @year]
-		puts "  %d-%d-%d" % [@wins, @losses, @ties]
-		puts "  roster:"
+		puts "%s%s"        % [ $indent.str, @name ]
+        $indent.increase
+		puts "%s%s"        % [ $indent.str, @href ]
+		puts "%s%s"        % [ $indent.str, @guid ] if $options.debug
+		puts "%s%s"        % [ $indent.str, @city]
+		puts "%s%s"        % [ $indent.str, @sport]
+		puts "%s%s-%s"     % [ $indent.str, @season, @year ]
+		puts "%s%d-%d-%d"  % [ $indent.str, @wins, @losses, @ties ]
 		@roster.display
-		puts "  games:"
+		puts "%s%s"        % [ $indent.str, "games:" ]
+        $indent.increase
 		@games.each do |game|
 			game.display
 		end
+        $indent.decrease
+        $indent.decrease
 	end
 end
 
