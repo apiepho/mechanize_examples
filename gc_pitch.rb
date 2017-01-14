@@ -5,19 +5,6 @@ require './gc_common'
 class Pitch
 
 	def initialize(pitch_xml_element)
-		@xml_element = pitch_xml_element
-		
-        # a 'pitch' can be a pitch or an event (out, scored, other)
-
-		# parse pitch_xml_element with Nokogiri		
-		#doc = Nokogiri::HTML(temp)
-		@description = @xml_element.css('.event_description', '.pitch_description').inner_text.strip
-	end
-    
-    def pitch?
-    end
-
-	def display
 =begin
 examples of pitch_xml_element:
 
@@ -51,7 +38,23 @@ examples of pitch_xml_element:
     </span>
 </li>
 =end
+		
+        # a 'pitch' can be a pitch or an event (out, scored, other)
+
+		# parse pitch_xml_element with Nokogiri		
+		#doc = Nokogiri::HTML(temp)
+		@description = pitch_xml_element.css('.event_description', '.pitch_description').inner_text.strip
+	end
+    
+	def display
 		puts "%s%s" % [ $indent.str, @description ]
 	end
+
+	def display_xml
+		puts "<pitch>"
+		puts "%s" % @description
+		puts "</pitch>"
+	end
+
 end
 

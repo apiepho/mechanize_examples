@@ -24,5 +24,15 @@ class Pitches
         $indent.decrease
 		puts "%s%s%d"      % [ $indent.str, "pitches total: ", @pitches.length ]
 	end
+
+	def display_xml
+		puts "<pitches>"
+		@pitches.each do |pitch|
+			pitch.display_xml
+		end
+		puts "<total>%d</total>"      % @pitches.length
+		puts "</pitches>"
+	end
+
 end
 

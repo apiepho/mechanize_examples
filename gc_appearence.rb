@@ -27,5 +27,15 @@ class Appearence
 		@pitches.display
 		puts "%s%s%2d %2d" % [ $indent.str, "running score: ", @score_away, @score_home ]
 	end
+
+	def display_xml
+		puts "<appearence>"
+		@pitches.display_xml
+		puts "<running_score>"
+		puts "<away>%d</away>" % @score_away
+		puts "<home>%d</home>" % @score_home
+		puts "</running_score>"
+		puts "</appearence>"
+	end
 end
 

@@ -80,6 +80,18 @@ require './gc_teams'
 #   play++                                                     (TODO)
 
 
+def display(teams)
+	puts "Results from parsing..."
+	$indent = Indent.new
+	teams.display()
+end
+
+def display_xml(teams)
+	puts "<gc>"
+	teams.display_xml()
+	puts "</gc>"
+end
+
 # parse command line options
 $options = OpenStruct.new
 parser = OptionParser.new do |opt|
@@ -89,6 +101,8 @@ parser = OptionParser.new do |opt|
 	opt.on('-y', '--year <YYYY>',                        '(optional) specific year')                                       { |o| $options.year         = o    }
 	opt.on('-s', '--season <spring|summer|fall|winter>', '(optional) specfic season')                                      { |o| $options.season       = o    }
 	opt.on('-t', '--teams <teams>',                      '(optional) list of sub strings to limit teams (separated by ,)') { |o| $options.teams        = o    }
+	opt.on('-f', '--file <name>',                        '(optional) output file')                                         { |o| $options.file         = o    }
+	opt.on('-x', '--xml',                                '(optional) display as xml')                                      { |o| $options.xml          = true }
 	opt.on('-R', '--Roster <count>',                     '(debug)    limit roster per team')                               { |o| $options.roster       = o    }
 	opt.on('-G', '--Games <count>',                      '(debug)    limit games per team')                                { |o| $options.games        = o    }
 	opt.on('-I', '--Innings <count>',                    '(debug)    limit inning halfs per game')                         { |o| $options.halfs        = o    }
@@ -120,6 +134,13 @@ $browser.form(:id,'frm_login').submit
 # build teams
 teams = Teams.new()
 
-puts "Results from parsing..."
-$indent = Indent.new
-teams.display()
+# start redirect to file
+old_stdout = $stdout
+$stdout = File.open($options.file, "w") if not $options.file.nil?
+
+display(teams)     if not $options.xml
+display_xml(teams) if     $options.xml
+
+# restore stdout
+$stdout = old_stdout
+

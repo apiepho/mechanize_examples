@@ -29,5 +29,13 @@ class Games
 		end
         $indent.decrease
 	end
+
+	def display_xml
+		puts "<games>"
+		@games.each do |game|
+			game.display_xml
+		end
+		puts "</games>"
+	end
 end
 

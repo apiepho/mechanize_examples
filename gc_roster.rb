@@ -40,5 +40,13 @@ class Roster
 		end
         $indent.decrease
 	end
+
+	def display_xml()
+		puts "<roster>"
+		@players.each do |player|
+			player.display_xml
+		end
+		puts "</roster>"
+	end
 end
 

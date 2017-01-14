@@ -59,4 +59,15 @@ class Teams
 		puts $total_players  if $options.debug
 		puts $total_games    if $options.debug
 	end
+
+	def display_xml()
+		puts "<teams>"
+		@teams.each do |team|
+			team.display_xml
+		end
+		puts "<total_teams>%d</total_teams>"     % $total_teams
+		puts "<total_players>%d</total_players>" % $total_players
+		puts "<total_games>%d</total_games>"     % $total_games
+		puts "</teams>"
+	end
 end

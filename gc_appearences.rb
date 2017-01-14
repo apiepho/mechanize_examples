@@ -20,5 +20,16 @@ class Appearences
 		end
         $indent.decrease
 	end
+	
+
+	def display_xml
+		puts "<appearences>"
+		@appearences.each do |appearence|
+			appearence.display_xml
+		end
+		puts "</appearences>"
+	end
+	
+
 end
 

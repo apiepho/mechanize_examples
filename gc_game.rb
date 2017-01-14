@@ -10,49 +10,6 @@ class Game
 
 	def initialize(game_json)
 		# game data comes from game data json from specific team page (given parameter)
-		$total_games += 1
-
-		@at_vs           = (game_json["home"] === "home" ? "vs" : "at")
-		@date            = DateTime.parse(game_json["utc_start"])
-		@win_lose_tie    = "win"   if (game_json["result"] === "W")
-		@win_lose_tie    = "loss"  if (game_json["result"] === "L")
-		@win_lose_tie    = "tie"   if (game_json["result"] === "T")
-        score_home       =  game_json["state"]["home"].to_i
-        score_away       =  game_json["state"]["away"].to_i
-        @score_us        = (game_json["home"] ? score_home : score_away)
-        @score_them      = (game_json["home"] ? score_away : score_home)
-		@other_team_name =  game_json["other_team_name"]
-		@id              =  game_json["game_id"]
-		@location        = (game_json["location"].nil? ? "-" : game_json["location"])
-		@recap           =  game_json["recap_title"]
-
-		# get game lineups
-				
-		# get game plays page
-		uri = GC_PLAYS_URI % + @id
-		puts "getting %s ..." % uri if $options.debug
-		$browser.goto(uri)
-      
-		# get body as a string, waiting for javascript to finish populating
-		temp = $browser.html
-    	seconds = 0
-    	while not temp.include?(" inning_1_half_0 \"") and seconds < 30 do
-        	sleep(1)
-			seconds += 1
-			puts "." if $options.debug
-        	temp = $browser.html
-		end
-
-		# parse html with Nokogiri		
-		doc = Nokogiri::HTML(temp)
-		xml_elements = doc.css('.inning_half')
-		xml_elements = xml_elements.reverse
-
-		# build list of inning halfs
-		@inning_halfs = Innings.new(xml_elements)
-    end
-    
-	def display
 =begin
 # example game_json, one element from team json data
 {"home_won"=>false,
@@ -93,6 +50,49 @@ class Game
  "minutes_before"=>0,
  "other_team_name"=>"Eaton"}
 =end
+		$total_games += 1
+
+		@at_vs           = (game_json["home"] === "home" ? "vs" : "at")
+		@date            = DateTime.parse(game_json["utc_start"])
+		@win_lose_tie    = "win"   if (game_json["result"] === "W")
+		@win_lose_tie    = "loss"  if (game_json["result"] === "L")
+		@win_lose_tie    = "tie"   if (game_json["result"] === "T")
+        score_home       =  game_json["state"]["home"].to_i
+        score_away       =  game_json["state"]["away"].to_i
+        @score_us        = (game_json["home"] ? score_home : score_away)
+        @score_them      = (game_json["home"] ? score_away : score_home)
+		@other_team_name =  game_json["other_team_name"]
+		@id              =  game_json["game_id"]
+		@location        = (game_json["location"].nil? ? "-" : game_json["location"])
+		@recap           =  game_json["recap_title"]
+
+		# get game lineups
+				
+		# get game plays page
+		uri = GC_PLAYS_URI % + @id
+		puts "getting %s ..." % uri if $options.debug
+		$browser.goto(uri)
+      
+		# get body as a string, waiting for javascript to finish populating
+		temp = $browser.html
+    	seconds = 0
+    	while not temp.include?(" inning_1_half_0 \"") and seconds < 30 do
+        	sleep(1)
+			seconds += 1
+			puts "." if $options.debug
+        	temp = $browser.html
+		end
+
+		# parse html with Nokogiri		
+		doc = Nokogiri::HTML(temp)
+		xml_elements = doc.css('.inning_half')
+		xml_elements = xml_elements.reverse
+
+		# build list of inning halfs
+		@innings = Innings.new(xml_elements)
+    end
+    
+	def display
 		puts "%s%s %s" % [ $indent.str, @at_vs, @other_team_name ]
         $indent.increase
 		puts "%s%s"      % [ $indent.str, @date.strftime("%A, %b %d %Y %l:%M %p") ]
@@ -104,6 +104,20 @@ class Game
 		puts "%s%s%s"    % [ $indent.str, "recap:    ", @recap ]
 		@inning_halfs.display
         $indent.decrease
+	end
+
+	def display_xml
+		puts "<game>"
+		puts "<other_team_name>%s</other_team_name>" % @other_team_name
+		puts "<date>%s</date>"                       % @date.strftime("%A, %b %d %Y %l:%M %p")
+		puts "<id>%s</id>"                           % @id
+		puts "<location>%s</location>"               % @location
+		puts "<us>%s</us>"                           % @score_us
+		puts "<them>%s</them>"                       % @score_them
+		puts "<win_lose_tie>%s</win_lose_tie>"       % @win_lose_tie
+		puts "<recap>%s</recap>"                     % @recap
+		@innings.display_xml
+		puts "</game>"
 	end
 end
 
