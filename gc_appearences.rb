@@ -5,31 +5,31 @@ require './gc_appearence'
 
 class Appearences
 
-	def initialize(appearence_xml_element)
-		@appearences = []
+    def initialize(appearence_xml_element)
+        @appearences = []
         appearence_xml_element.each do |xml_element|
-			next if not $options.appearences.nil? and @appearences.length >= $options.appearences.to_i
+            next if not $options.appearences.nil? and @appearences.length >= $options.appearences.to_i
             @appearences << Appearence.new(xml_element)
-		end
-	end
-    
-	def display
-        $indent.increase
-		@appearences.each do |appearence|
-			appearence.display
-		end
-        $indent.decrease
-	end
-	
+        end
+    end
 
-	def display_xml
-		puts "<appearences>"
-		@appearences.each do |appearence|
-			appearence.display_xml
-		end
-		puts "</appearences>"
-	end
-	
+    def display
+        $indent.increase
+        @appearences.each do |appearence|
+            appearence.display
+        end
+        $indent.decrease
+    end
+
+
+    def display_xml
+        puts "<appearences>"
+        @appearences.each do |appearence|
+            appearence.display_xml
+        end
+        puts "</appearences>"
+    end
+
 
 end
 
