@@ -1,7 +1,7 @@
 # add copyright header
 
 require './gc_common'
-require './gc_plate_appearence'
+require './gc_appearences'
 
 class InningHalf
 
@@ -13,12 +13,8 @@ class InningHalf
 		xml_elements = @xml_element.css('.plateAppearanceRow')
 		xml_elements = xml_elements.reverse
 
-		# build list of inning halfs
-		@plate_appearences = []
-        xml_elements.each do |xml_element|
-			next if not $options.plates.nil? and @plate_appearences.length >= $options.plates.to_i
-            @plate_appearences << PlateAppearence.new(xml_element)
-        end
+		# build list of plate appearences
+		@appearences = Appearences.new(xml_elements)
 	end
     
 	def display
@@ -30,11 +26,7 @@ class InningHalf
 =end
         inning_half_str = @xml_element.values.join(" ").split(" ").join(", ")
 		puts "%s%s" % [ $indent.str, inning_half_str ]
-        $indent.increase
-		@plate_appearences.each do |plate_appearence|
-			plate_appearence.display
-		end
-        $indent.decrease
+		@appearences.display
 	end
 end
 
