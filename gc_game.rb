@@ -12,12 +12,24 @@ class Game
 		# game data comes from game data json from specific team page (given parameter)
 		$total_games += 1
 
-		@json = game_json
+		@at_vs           = (game_json["home"] === "home" ? "vs" : "at")
+		@date            = DateTime.parse(game_json["utc_start"])
+		@win_lose_tie    = "win"   if (game_json["result"] === "W")
+		@win_lose_tie    = "loss"  if (game_json["result"] === "L")
+		@win_lose_tie    = "tie"   if (game_json["result"] === "T")
+        score_home       =  game_json["state"]["home"].to_i
+        score_away       =  game_json["state"]["away"].to_i
+        @score_us        = (game_json["home"] ? score_home : score_away)
+        @score_them      = (game_json["home"] ? score_away : score_home)
+		@other_team_name =  game_json["other_team_name"]
+		@id              =  game_json["game_id"]
+		@location        = (game_json["location"].nil? ? "-" : game_json["location"])
+		@recap           =  game_json["recap_title"]
 
 		# get game lineups
 				
 		# get game plays page
-		uri = GC_PLAYS_URI % + @json["game_id"]
+		uri = GC_PLAYS_URI % + @id
 		puts "getting %s ..." % uri if $options.debug
 		$browser.goto(uri)
       
@@ -81,25 +93,15 @@ class Game
  "minutes_before"=>0,
  "other_team_name"=>"Eaton"}
 =end
-        at_vs        = (@json["home"] === "home" ? "vs" : "at")
-        date         = DateTime.parse(@json["utc_start"])
-		win_lose_tie = "win"   if (@json["result"] === "W")
-		win_lose_tie = "loss"  if (@json["result"] === "L")
-		win_lose_tie = "tie"   if (@json["result"] === "T")
-        score_home   = @json["state"]["home"].to_i
-        score_away   = @json["state"]["away"].to_i
-        @score_us    = (@json["home"] ? score_home : score_away)
-        @score_them  = (@json["home"] ? score_away : score_home)
-
-		puts "%s%s %s" % [ $indent.str, at_vs, @json["other_team_name"] ]
+		puts "%s%s %s" % [ $indent.str, @at_vs, @other_team_name ]
         $indent.increase
-		puts "%s%s"      % [ $indent.str, date.strftime("%A, %b %d %Y %l:%M %p") ]
-		puts "%s%s%s"    % [ $indent.str, "game_id:  ", @json["game_id"] ] if $options.debug
-		puts "%s%s%s"    % [ $indent.str, "location: ", (@json["location"].nil? ? "-" : @json["location"]) ]
+		puts "%s%s"      % [ $indent.str, @date.strftime("%A, %b %d %Y %l:%M %p") ]
+		puts "%s%s%s"    % [ $indent.str, "game_id:  ", @id ] if $options.debug
+		puts "%s%s%s"    % [ $indent.str, "location: ", @location ]
 		puts "%s%s%s"    % [ $indent.str, "us:       ", @score_us ]
 		puts "%s%s%s"    % [ $indent.str, "them:     ", @score_them ]
-		puts "%s%s%s"    % [ $indent.str, "result:   ", win_lose_tie ]
-		puts "%s%s%s"    % [ $indent.str, "recap:    ", @json["recap_title"] ]
+		puts "%s%s%s"    % [ $indent.str, "result:   ", @win_lose_tie ]
+		puts "%s%s%s"    % [ $indent.str, "recap:    ", @recap ]
 		@inning_halfs.display
         $indent.decrease
 	end

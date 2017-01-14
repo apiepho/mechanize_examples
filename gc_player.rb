@@ -8,7 +8,18 @@ class Player
 		# player data comes from roster data json from specific team page (given parameter)
 		$total_players += 1
 
-		@json = player_json
+		@name   = player_json["formatted_name"]
+		@id     = player_json["player_id"]
+		@number = (player_json["num"].nil? ? "-" : player_json["num"])
+		@throws = (player_json["t"].nil?   ? "-" : player_json["t"])
+		@bats   = (player_json["b"].nil?   ? "-" : player_json["b"])
+		@positions = ""
+		if not player_json["pos"].empty?
+			player_json["pos"].each do |pos|
+				@positions += pos
+				@positions += " "
+			end
+		end
 	end
     
 	def display
@@ -25,19 +36,12 @@ class Player
     "player_id"=>"56e4392543ee3f00211cb670",
     "wall_advice"=>[]},
 =end
-		puts "%s%s"   % [ $indent.str, @json["formatted_name"] ]
-		puts "%s%s%s" % [ $indent.str, "player_id:   ", @json["player_id"] ] if $options.debug
-		puts "%s%s%s" % [ $indent.str, "number:      ", (@json["num"].nil? ? "-" : @json["num"]) ]
-		puts "%s%s%s" % [ $indent.str, "throws:      ", (@json["t"].nil? ? "-" : @json["t"]) ]
-		puts "%s%s%s" % [ $indent.str, "bats:        ", (@json["b"].nil? ? "-" : @json["b"]) ]
-		pos_str = ""
-		if not @json["pos"].empty?
-			@json["pos"].each do |pos|
-				pos_str += pos
-				pos_str += " "
-			end
-		end
-		puts "%s%s%s" % [ $indent.str, "position(s): ", pos_str ]
+		puts "%s%s"   % [ $indent.str, @name ]
+		puts "%s%s%s" % [ $indent.str, "player_id:   ", @id        ] if $options.debug
+		puts "%s%s%s" % [ $indent.str, "number:      ", @number    ]
+		puts "%s%s%s" % [ $indent.str, "throws:      ", @throws    ]
+		puts "%s%s%s" % [ $indent.str, "bats:        ", @bats      ]
+		puts "%s%s%s" % [ $indent.str, "position(s): ", @positions ]
 	end
 end
 

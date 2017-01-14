@@ -5,15 +5,15 @@ require './gc_teams'
 
 # Goals of gc_app
 #  parse all GC teams and
-#   1) list games in oldest-first (rather than newest-firs) order
-#   2) Caclulate specfiic player stats
+#   1) list games in oldest-first (rather than newest-first) order
+#   2) Calculate specific player stats
 
 
 # TODO: Summary list of TODO items
-# - refactor any saved json/xml as specific class members (player, game)
 # - display as xml option
-# - save to file option
-# - restore from file option
+# - save to file as xml
+# - restore from file as xml
+# - save to json string
 
 # - parse pitches including type (pitch, event-lineup, event-walk, event-out + play, event-scored + play, event + play)
 # - parse/add play with reference to players involved, display play short cut ie. 6-4-3
