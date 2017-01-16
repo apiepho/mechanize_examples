@@ -69,7 +69,7 @@ class Game
         # get game lineups
 
         # get game plays page
-        uri = GC_PLAYS_URI % + @id
+        uri = GC_PLAYS_URI % @id
         puts "getting %s ..." % uri if $options.debug
         $browser.goto(uri)
 
@@ -102,7 +102,7 @@ class Game
         puts "%s%s%s"    % [ $indent.str, "them:     ", @score_them ]
         puts "%s%s%s"    % [ $indent.str, "result:   ", @win_lose_tie ]
         puts "%s%s%s"    % [ $indent.str, "recap:    ", @recap ]
-        @inning_halfs.display
+        @innings.display
         $indent.decrease
     end
 

@@ -24,8 +24,11 @@ class Appearence
     end
 
     def display
+        puts "%s%s"        % [ $indent.str, "plate appearence: " ]
+        $indent.increase
         @pitches.display
         puts "%s%s%2d %2d" % [ $indent.str, "running score: ", @score_away, @score_home ]
+        $indent.increase
     end
 
     def display_xml

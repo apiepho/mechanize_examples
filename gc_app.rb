@@ -10,14 +10,10 @@ require './gc_teams'
 
 
 # TODO: Summary list of TODO items
-# - display as xml option
-# - save to file as xml
 # - restore from file as xml
 # - save to json string
+# - investigate if ther is more json for pitch/play recap
 
-# - parse pitches including type (pitch, event-lineup, event-walk, event-out + play, event-scored + play, event + play)
-# - parse/add play with reference to players involved, display play short cut ie. 6-4-3
-# - parse plate appearences and plays
 # - parse lines-ups from game data as gc_lineups.rb
 # - parse GC stats if available
 # - start generation of stats
@@ -75,9 +71,24 @@ require './gc_teams'
 #     pitch++
 
 # pitch
-#   description
-#   type (pitch, event, event out, event scored, event lineup) (TODO)
-#   play++                                                     (TODO)
+#   
+#   event (pitch, event)
+#   href
+#   play++ 
+#   recap (ie. ball, strike, play.recap)
+
+# play
+#   defense touches
+#     touch++
+#   offense touches
+#     touch++
+#   recap
+
+# touch
+#  name
+#  player href
+#  number
+#  position (Pitcher etc, Batter, Scorer)
 
 
 def display(teams)
@@ -143,4 +154,3 @@ display_xml(teams) if     $options.xml
 
 # restore stdout
 $stdout = old_stdout
-
