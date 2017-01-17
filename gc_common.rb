@@ -51,15 +51,15 @@ $indent = nil
 class Browser
 
     attr_reader :page_count
-    
+
     def initialize
         @page_count = 0
-        
+
         if $options.output === "cache"
             FileUtils.rm_rf($options.dest)
             FileUtils.mkdir_p($options.dest)
         end
-        
+
         if not $options.input === "cache"
             # get a new instance of Watir class (NOTE: need chromedriver in path,
             # get chromedriver from https://sites.google.com/a/chromium.org/chromedriver/downloads)
@@ -78,7 +78,7 @@ class Browser
 
     def goto(uri)
         @page_count += 1
-        puts "GC.start" if (@page_count % 10) == 0 and $options.debug
+        puts "GC.start, page_count: %d" % @page_count if (@page_count % 10) == 0 and $options.debug
         GC.start if (@page_count % 10) == 0
 
         if $options.output === "cache"

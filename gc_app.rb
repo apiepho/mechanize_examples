@@ -71,10 +71,10 @@ require './gc_teams'
 #     pitch++
 
 # pitch
-#   
+#
 #   event (pitch, event)
 #   href
-#   play++ 
+#   play++
 #   recap (ie. ball, strike, play.recap)
 
 # play
@@ -127,14 +127,14 @@ parser.parse!
 
 # validate options
 if $options.input.nil?
-    $options.input = "web" 
+    $options.input = "web"
     $options.src   = GC_BASE_URI
 end
 if ["web"].include?($options.input) and $options.src.nil?
     $options.src   = GC_BASE_URI
 end
 if $options.output.nil?
-    $options.output = "stdout" 
+    $options.output = "stdout"
     $options.dest   = nil
 end
 if ["xml"].include?($options.output)
@@ -165,7 +165,7 @@ if ["cache", "xml"].include?($options.output)
         puts parser.help
         exit
     end
-    if not $options.dest.start_with?("/") and not $options.dest.start_with?("./") 
+    if not $options.dest.start_with?("/") and not $options.dest.start_with?("./")
         puts "Error: dest must be full path or relative (start with / or ./ ."
         puts parser.help
         exit

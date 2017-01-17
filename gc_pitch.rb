@@ -9,7 +9,7 @@ class Pitch
         # parse pitch_xml_element with Nokogiri
         #doc = Nokogiri::HTML(temp)
         @event = pitch_xml_element.css('span @class').to_s
-        @recap = pitch_xml_element.css('.event_description', '.pitch_description').inner_text.strip        
+        @recap = pitch_xml_element.css('.event_description', '.pitch_description').inner_text.strip
         @href  = pitch_xml_element.css('a @href').to_s
         @play  = Play.new(@href) if not @href.empty?
     end

@@ -65,6 +65,7 @@ class Game
         @id              =  game_json["game_id"]
         @location        = (game_json["location"].nil? ? "-" : game_json["location"])
         @recap           =  game_json["recap_title"]
+        puts @recap if $options.debug
 
         # get game lineups
 

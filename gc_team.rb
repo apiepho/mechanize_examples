@@ -7,6 +7,7 @@ require './gc_roster'
 class Team
 
     def initialize(href)
+        puts href if $options.debug
         # team data comes from 2 parts:
         # 1. data gleened from the specific team page href (given parameter)
         # 2. data from the specfic team page
