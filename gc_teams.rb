@@ -11,6 +11,7 @@ class Teams
         # go to teams page
         $browser.goto(GC_TEAMS_URI)
         puts "getting %s ..." % GC_TEAMS_URI if $options.debug
+        temp = $browser.html # mainly for cache
 
         # team links have href that includes /t/
         links = []

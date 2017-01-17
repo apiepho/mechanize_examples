@@ -1,5 +1,6 @@
 # add copyright header
 
+require 'fileutils'
 require 'json'
 require 'nokogiri'
 require 'optparse'
@@ -45,4 +46,56 @@ class Indent
     end
 end
 $indent = nil
+
+# browser wrapper for cache support
+class Browser
+    def cache
+    end
+    
+    def initialize
+        if $options.output === "cache"
+            FileUtils.rm_rf($options.dest)
+            FileUtils.mkdir_p($options.dest)
+        end
+        
+        if not $options.input === "cache"
+            # get a new instance of Watir class (NOTE: need chromedriver in path,
+            # get chromedriver from https://sites.google.com/a/chromium.org/chromedriver/downloads)
+            $browser_private = Watir::Browser.new(:chrome)
+            $browser_private.window.resize_to(1200, 1000)
+            #$browser_private.window.move_to(100, 100)
+
+            # login
+            $browser_private.goto(GC_LOGIN_URI)
+            puts "getting %s ..." % GC_LOGIN_URI if $options.debug
+            $browser_private.text_field(:id,'email').set($options.email)
+            $browser_private.text_field(:id,'login_password').set($options.password)
+            $browser_private.form(:id,'frm_login').submit
+        end
+    end
+
+    def goto(uri)
+        if $options.output === "cache"
+            temp = uri.gsub($options.src, "")
+            temp = temp[1..-1]
+            temp = temp.gsub("/", "_")
+            @cache_path = "%s/%s" % [ $options.dest, temp ]
+        end
+        $browser_private.goto(uri)
+    end
+
+    def html
+        result = $browser_private.html
+        if $options.output === "cache"
+            File.write(@cache_path, result)
+        end
+        result
+    end
+
+    def links
+        result = $browser_private.links
+        result
+    end
+end
+$browser_private = nil
 

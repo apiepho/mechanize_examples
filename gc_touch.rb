@@ -37,8 +37,8 @@ class Touch
         puts "<touch>"
         puts "<name>%s</name>"         % @name
         puts "<href>%s</href>"         % @href
-        puts "<number>%s</recap>"      % @number
-        puts "<position>%s</position>" % @recap
+        puts "<number>%s</number>"     % @number
+        puts "<position>%s</position>" % @position
         puts "</touch>"
     end
 end

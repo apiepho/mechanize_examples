@@ -106,51 +106,93 @@ end
 # parse command line options
 $options = OpenStruct.new
 parser = OptionParser.new do |opt|
-    opt.on('-e', '--email    <email>',                   'login email for GameChanger')                                    { |o| $options.email        = o    }
-    opt.on('-p', '--password <password>',                'login password for GameChanger')                                 { |o| $options.password     = o    }
-    opt.on('-l', '--list',                               '(optional) list team urls')                                      { |o| $options.list         = true }
-    opt.on('-y', '--year <YYYY>',                        '(optional) specific year')                                       { |o| $options.year         = o    }
-    opt.on('-s', '--season <spring|summer|fall|winter>', '(optional) specfic season')                                      { |o| $options.season       = o    }
-    opt.on('-t', '--teams <teams>',                      '(optional) list of sub strings to limit teams (separated by ,)') { |o| $options.teams        = o    }
-    opt.on('-f', '--file <name>',                        '(optional) output file')                                         { |o| $options.file         = o    }
-    opt.on('-x', '--xml',                                '(optional) display as xml')                                      { |o| $options.xml          = true }
-    opt.on('-R', '--Roster <count>',                     '(debug)    limit roster per team')                               { |o| $options.roster       = o    }
-    opt.on('-G', '--Games <count>',                      '(debug)    limit games per team')                                { |o| $options.games        = o    }
-    opt.on('-I', '--Innings <count>',                    '(debug)    limit inning halfs per game')                         { |o| $options.halfs        = o    }
-    opt.on('-A', '--Appearences <count>',                '(debug)    limit plate appearences per game')                    { |o| $options.appearences  = o    }
-    opt.on('-P', '--Pitches <count>',                    '(debug)    limit pitches per plate appearences')                 { |o| $options.pitches      = o    }
-    opt.on('-D', '--Debug',                              '(debug)    show debug messages')                                 { |o| $options.debug        = true }
+    opt.on('-i', '--input <web|cache|xml>',                'input type: web, web cache, or xml file (default: web)')         { |o| $options.input        = o    }
+    opt.on('-s', '--src <url|dir|xmlfile>',                'web url, dir name, or xml file (default gc.com)')                { |o| $options.src          = o    }
+    opt.on('-o', '--output <stdout|cache|xml>',            'output type: stdout, web cache, or xml file (default: stdout)')  { |o| $options.output       = o    }
+    opt.on('-d', '--dest <stdout|dir|xmlfile>',            'stdout, dir name or xml file (default: stdout)')                 { |o| $options.dest         = o    }
+    opt.on('-e', '--email <email>',                        'login email for GameChanger')                                    { |o| $options.email        = o    }
+    opt.on('-p', '--password <password>',                  'login password for GameChanger')                                 { |o| $options.password     = o    }
+    opt.on('-l', '--list',                                 '(optional) list team urls')                                      { |o| $options.list         = true }
+    opt.on('-Y', '--year <YYYY>',                          '(optional) specific year')                                       { |o| $options.year         = o    }
+    opt.on('-S', '--season <spring|summer|fall|winter>',   '(optional) specfic season')                                      { |o| $options.season       = o    }
+    opt.on('-T', '--teams <teams>',                        '(optional) list of sub strings to limit teams (separated by ,)') { |o| $options.teams        = o    }
+    opt.on('-R', '--Roster <count>',                       '(debug)    limit roster per team')                               { |o| $options.roster       = o    }
+    opt.on('-G', '--Games <count>',                        '(debug)    limit games per team')                                { |o| $options.games        = o    }
+    opt.on('-I', '--Innings <count>',                      '(debug)    limit inning halfs per game')                         { |o| $options.halfs        = o    }
+    opt.on('-A', '--Appearences <count>',                  '(debug)    limit plate appearences per game')                    { |o| $options.appearences  = o    }
+    opt.on('-P', '--Pitches <count>',                      '(debug)    limit pitches per plate appearences')                 { |o| $options.pitches      = o    }
+    opt.on('-D', '--Debug',                                '(debug)    show debug messages')                                 { |o| $options.debug        = true }
 end
 parser.parse!
 
-if $options.email.nil? or $options.password.nil?
-    puts "Error: must provide email and password."
+# validate options
+if $options.input.nil?
+    $options.input = "web" 
+    $options.src   = GC_BASE_URI
+end
+if ["web"].include?($options.input) and $options.src.nil?
+    $options.src   = GC_BASE_URI
+end
+if $options.output.nil?
+    $options.output = "stdout" 
+    $options.dest   = nil
+end
+if ["xml"].include?($options.output)
+    $options.xml  = true
+    $options.file = $options.dest
+end
+
+if not ["web", "cache", "xml"].include?($options.input)
+    puts "Error: must provide input value."
     puts parser.help
     exit
 end
+if ["web"].include?($options.input)
+    if $options.email.nil? or $options.password.nil?
+        puts "Error: must provide email and password."
+        puts parser.help
+        exit
+    end
+end
+if not ["stdout", "cache", "xml"].include?($options.output)
+    puts "Error: must provide output value."
+    puts parser.help
+    exit
+end
+if ["cache", "xml"].include?($options.output)
+    if $options.dest.nil?
+        puts "Error: must provide dest value."
+        puts parser.help
+        exit
+    end
+    if not $options.dest.start_with?("/") and not $options.dest.start_with?("./") 
+        puts "Error: dest must be full path or relative (start with / or ./ ."
+        puts parser.help
+        exit
+    end
+end
 
+$browser = Browser.new
+=begin
 # get a new instance of Watir class (NOTE: need chromedriver in path,
 # get chromedriver from https://sites.google.com/a/chromium.org/chromedriver/downloads)
 $browser = Watir::Browser.new(:chrome)
 $browser.window.resize_to(1200, 1000)
 #$browser.window.move_to(100, 100)
+=end
 
-# login
-$browser.goto(GC_LOGIN_URI)
-puts "getting %s ..." % GC_LOGIN_URI if $options.debug
-$browser.text_field(:id,'email').set($options.email)
-$browser.text_field(:id,'login_password').set($options.password)
-$browser.form(:id,'frm_login').submit
 
 # build teams
 teams = Teams.new()
 
-# start redirect to file
-old_stdout = $stdout
-$stdout = File.open($options.file, "w") if not $options.file.nil?
+if not $options.output === "cache"
+    # start redirect to file (easiest way to save to a xml file)
+    old_stdout = $stdout
+    $stdout = File.open($options.file, "w") if not $options.file.nil?
 
-display(teams)     if not $options.xml
-display_xml(teams) if     $options.xml
+    display(teams)     if not $options.xml
+    display_xml(teams) if     $options.xml
 
-# restore stdout
-$stdout = old_stdout
+    # restore stdout
+    $stdout = old_stdout
+end

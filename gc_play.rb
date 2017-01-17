@@ -59,12 +59,12 @@ class Play
         puts "<play>"
         puts "<defense>"
         @defense.each do |touch|
-        	touch.display
+        	touch.display_xml
         end
         puts "</defense>"
         puts "<offense>"
-        @defense.each do |touch|
-        	touch.display
+        @offense.each do |touch|
+        	touch.display_xml
         end
         puts "</offense>"
         puts "<recap>%s</recap>" % @recap
