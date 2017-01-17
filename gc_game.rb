@@ -80,7 +80,7 @@ class Game
             sleep(1)
             seconds += 1
             puts "." if $options.debug
-            temp = $browser.html
+            temp = $browser.html(true)
         end
 
         # parse html with Nokogiri

@@ -61,10 +61,10 @@ class Browser
         end
     end
 
-    def html
+    def html(cache_off = false)
         result = nil
         # test cache read
-        if not $options.cache.nil?
+        if not $options.cache.nil? and not cache_off
             if File.file?(@cache_filename)
                  puts "read cache: %s" % @cache_filename  if $options.debug
                  result = File.read(@cache_filename)
@@ -81,6 +81,10 @@ class Browser
         if not $options.cache.nil?
             if not File.file?(@cache_filename) and not result.empty?
                  puts "write cache: %s" % @cache_filename if $options.debug
+                 File.write(@cache_filename, result)
+            end
+            if cache_off and not result.empty?
+                 puts "force write cache: %s" % @cache_filename if $options.debug
                  File.write(@cache_filename, result)
             end
         end

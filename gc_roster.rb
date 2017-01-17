@@ -24,7 +24,7 @@ class Roster
         @players = []
         json_decoded["roster"].each do |player_json|
             next if not $options.roster.nil? and @players.length >= $options.roster.to_i
-            @players << Player.new(player_json)
+            @players << Player.new(team_href, player_json)
         end
 
         # merge duplicate players

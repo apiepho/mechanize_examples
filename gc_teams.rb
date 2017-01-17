@@ -16,7 +16,8 @@ class Teams
         temp = doc.css('a').map { |link| link['href'] }
         links = []
         temp.each do |link|
-            links << link.strip if not link.nil? and link.include?('/t/')
+            # all links are full path
+            links << "%s%s" % [GC_BASE_URI, link.strip] if not link.nil? and link.include?('/t/')
         end
         links = links.uniq
 
