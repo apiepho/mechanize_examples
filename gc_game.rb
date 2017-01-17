@@ -71,7 +71,6 @@ class Game
 
         # get game plays page
         uri = GC_PLAYS_URI % @id
-        puts "getting %s ..." % uri if $options.debug
         $browser.goto(uri)
 
         # get body as a string, waiting for javascript to finish populating

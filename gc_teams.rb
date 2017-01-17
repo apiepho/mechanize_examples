@@ -10,13 +10,13 @@ class Teams
 
         # go to teams page
         $browser.goto(GC_TEAMS_URI)
-        puts "getting %s ..." % GC_TEAMS_URI if $options.debug
-        temp = $browser.html # mainly for cache
 
         # team links have href that includes /t/
+        doc = Nokogiri::HTML($browser.html)
+        temp = doc.css('a').map { |link| link['href'] }
         links = []
-        $browser.links.to_a.each do |link|
-            links << link.href if link.href.to_s.include?('/t/')
+        temp.each do |link|
+            links << link.strip if not link.nil? and link.include?('/t/')
         end
         links = links.uniq
 

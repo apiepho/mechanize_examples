@@ -10,6 +10,8 @@ require './gc_teams'
 
 
 # TODO: Summary list of TODO items
+# - refactor Browser to own file
+# - convert to an auto cache of web pages
 # - restore from file as xml
 # - save to json string
 # - investigate if ther is more json for pitch/play recap
@@ -23,6 +25,11 @@ require './gc_teams'
 # - add copyright to header of all files
 
 # General structure:
+# (all files require gc_common)
+# common
+#   browser
+#   indent
+
 # app
 #   teams
 #     teams++
@@ -106,12 +113,14 @@ end
 # parse command line options
 $options = OpenStruct.new
 parser = OptionParser.new do |opt|
-    opt.on('-i', '--input <web|cache|xml>',                'input type: web, web cache, or xml file (default: web)')         { |o| $options.input        = o    }
+    opt.on('-i', '--input <web|xml>',                      'input type: web, or xml file (default: web)')                    { |o| $options.input        = o    }
     opt.on('-s', '--src <url|dir|xmlfile>',                'web url, dir name, or xml file (default gc.com)')                { |o| $options.src          = o    }
-    opt.on('-o', '--output <stdout|cache|xml>',            'output type: stdout, web cache, or xml file (default: stdout)')  { |o| $options.output       = o    }
-    opt.on('-d', '--dest <stdout|dir|xmlfile>',            'stdout, dir name or xml file (default: stdout)')                 { |o| $options.dest         = o    }
+    opt.on('-o', '--output <stdout|xml>',                  'output type: stdout, or xml file (default: stdout)')             { |o| $options.output       = o    }
+    opt.on('-d', '--dest <stdout|xmlfile>',                'stdout, or xml file (default: stdout)')                          { |o| $options.dest         = o    }
     opt.on('-e', '--email <email>',                        'login email for GameChanger')                                    { |o| $options.email        = o    }
     opt.on('-p', '--password <password>',                  'login password for GameChanger')                                 { |o| $options.password     = o    }
+    opt.on('-c', '--cache <dir>',                          '(optional) enable auto-cache of web pages')                      { |o| $options.cache        = o    }
+    opt.on('-f', '--offline',                              '(optional) run offline')                                         { |o| $options.offline      = true }
     opt.on('-l', '--list',                                 '(optional) list team urls')                                      { |o| $options.list         = true }
     opt.on('-Y', '--year <YYYY>',                          '(optional) specific year')                                       { |o| $options.year         = o    }
     opt.on('-S', '--season <spring|summer|fall|winter>',   '(optional) specfic season')                                      { |o| $options.season       = o    }
@@ -142,7 +151,7 @@ if ["xml"].include?($options.output)
     $options.file = $options.dest
 end
 
-if not ["web", "cache", "xml"].include?($options.input)
+if not ["web", "xml"].include?($options.input)
     puts "Error: must provide input value."
     puts parser.help
     exit
@@ -154,19 +163,21 @@ if ["web"].include?($options.input)
         exit
     end
 end
-if not ["stdout", "cache", "xml"].include?($options.output)
+if not ["stdout", "xml"].include?($options.output)
     puts "Error: must provide output value."
     puts parser.help
     exit
 end
-if ["cache", "xml"].include?($options.output)
+if ["xml"].include?($options.output)
     if $options.dest.nil?
         puts "Error: must provide dest value."
         puts parser.help
         exit
     end
-    if not $options.dest.start_with?("/") and not $options.dest.start_with?("./")
-        puts "Error: dest must be full path or relative (start with / or ./ ."
+end
+if not $options.cache.nil?
+    if not $options.cache.start_with?("/") and not $options.cache.start_with?("./")
+        puts "Error: cache must be full path or relative (start with / or ./ ."
         puts parser.help
         exit
     end

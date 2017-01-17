@@ -11,7 +11,6 @@ class Play
 
         # get pitch play page
         uri = GC_BASE_URI + play_href
-        puts "getting %s ..." % uri if $options.debug
         $browser.goto(uri)
 
         # parse html with Nokogiri

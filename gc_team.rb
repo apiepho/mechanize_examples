@@ -35,7 +35,6 @@ class Team
         @roster = Roster.new(@href)
 
         # get the team page to get game record and game json data
-        puts "getting %s ..." % @href if $options.debug
         $browser.goto(@href)
 
         # from team page, get city and sport that is shown under team name

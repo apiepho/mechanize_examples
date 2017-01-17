@@ -9,7 +9,6 @@ class Roster
 
         # go to team roster page
         uri = GC_ROSTER_URI % team_href
-        puts "getting %s ..." % uri if $options.debug
         $browser.goto(uri)
 
         #pp $browser.html
