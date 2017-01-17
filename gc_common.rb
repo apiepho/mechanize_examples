@@ -49,10 +49,12 @@ $indent = nil
 
 # browser wrapper for cache support
 class Browser
-    def cache
-    end
+
+    attr_reader :page_count
     
     def initialize
+        @page_count = 0
+        
         if $options.output === "cache"
             FileUtils.rm_rf($options.dest)
             FileUtils.mkdir_p($options.dest)
@@ -75,6 +77,10 @@ class Browser
     end
 
     def goto(uri)
+        @page_count += 1
+        puts "GC.start" if (@page_count % 10) == 0 and $options.debug
+        GC.start if (@page_count % 10) == 0
+
         if $options.output === "cache"
             temp = uri.gsub($options.src, "")
             temp = temp[1..-1]
