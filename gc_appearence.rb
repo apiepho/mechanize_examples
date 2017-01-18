@@ -28,7 +28,7 @@ class Appearence
         $indent.increase
         @pitches.display
         puts "%s%s%2d %2d" % [ $indent.str, "running score: ", @score_away, @score_home ]
-        $indent.increase
+        $indent.decrease
     end
 
     def display_xml
