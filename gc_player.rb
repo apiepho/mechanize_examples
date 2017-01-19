@@ -1,18 +1,7 @@
 # add copyright header
 
 require './gc_common'
-require './gc_stats_batting_standard'
-require './gc_stats_batting_speed'
-require './gc_stats_batting_team_impact'
-require './gc_stats_pitching_standard'
-require './gc_stats_pitching_efficiency'
-require './gc_stats_pitching_command'
-require './gc_stats_pitching_batter'
-require './gc_stats_pitching_runs'
-require './gc_stats_pitching_pitch'
-require './gc_stats_fielding_standard'
-require './gc_stats_fielding_catcher'
-require './gc_stats_spray_chart'
+require './gc_stats_base'
 
 class Player
 
@@ -53,42 +42,17 @@ class Player
         team_id  = temp[-1]
         fname    = player_json["fname"].downcase
         linitial = player_json["lname"].downcase[0]
-        @stats_batting_standard    = StatsBattingStandard.new(fteam, team_id, fname, linitial, @id)
-        @stats_batting_speed       = StatsBattingSpeed.new(fteam, team_id, fname, linitial, @id)
-        @stats_batting_team_impact = StatsBattingTeamImpact.new(fteam, team_id, fname, linitial, @id)
-        @stats_pitching_standard   = StatsPitchingStandard.new(fteam, team_id, fname, linitial, @id)
-        @stats_pitching_efficiency = StatsPitchingEfficiency.new(fteam, team_id, fname, linitial, @id)
-        @stats_pitching_command    = StatsPitchingCommand.new(fteam, team_id, fname, linitial, @id)
-        @stats_pitching_batter     = StatsPitchingBatterResults.new(fteam, team_id, fname, linitial, @id)
-        @stats_pitching_runs       = StatsPitchingRuns.new(fteam, team_id, fname, linitial, @id)
-        @stats_pitching_pitch      = StatsPitchingPitchBreakdown.new(fteam, team_id, fname, linitial, @id)
-        @stats_fielding_standard   = StatsFieldingStandard.new(fteam, team_id, fname, linitial, @id)
-        @stats_fielding_catcher    = StatsFieldingCatching.new(fteam, team_id, fname, linitial, @id)
-        @stats_spray_chart         = StatsSprayChart.new(fteam, team_id, fname, linitial, @id)
-    end
-
-    def display
-        puts "%s%s"   % [ $indent.str, @name ]
-        puts "%s%s%s" % [ $indent.str, "player_id:   ", @id        ] if $options.debug
-        puts "%s%s%s" % [ $indent.str, "number:      ", @number    ]
-        puts "%s%s%s" % [ $indent.str, "throws:      ", @throws    ]
-        puts "%s%s%s" % [ $indent.str, "bats:        ", @bats      ]
-        puts "%s%s%s" % [ $indent.str, "position(s): ", @positions ]
-        puts "%s%s"   % [ $indent.str, "stats: " ]
-        $indent.increase
-        @stats_batting_standard.display
-        @stats_batting_speed.display
-        @stats_batting_team_impact.display
-        @stats_pitching_standard.display
-        @stats_pitching_efficiency.display
-        @stats_pitching_command.display
-        @stats_pitching_batter.display
-        @stats_pitching_runs.display
-        @stats_pitching_pitch.display
-        @stats_fielding_standard.display
-        @stats_fielding_catcher.display
-        @stats_spray_chart.display
-        $indent.decrease
+        @stats_batting_standard    = StatsBase.new(    GC_PLAYER_BATTING_STANDARD_URI,       "stats_batting_standard", fteam, team_id, fname, linitial, @id)
+        @stats_batting_speed       = StatsBase.new(       GC_PLAYER_BATTING_SPEED_URI,          "stats_batting_speed", fteam, team_id, fname, linitial, @id)
+        @stats_batting_team_impact = StatsBase.new(  GC_PLAYER_BATTING_TEAMIMPACT_URI,    "stats_batting_team_impact", fteam, team_id, fname, linitial, @id)
+        @stats_pitching_standard   = StatsBase.new(   GC_PLAYER_PITCHING_STANDARD_URI,      "stats_pitching_standard", fteam, team_id, fname, linitial, @id)
+        @stats_pitching_efficiency = StatsBase.new( GC_PLAYER_PITCHING_EFFICIENCY_URI,    "stats_pitching_efficiency", fteam, team_id, fname, linitial, @id)
+        @stats_pitching_command    = StatsBase.new(    GC_PLAYER_PITCHING_COMMAND_URI,       "stats_pitching_command", fteam, team_id, fname, linitial, @id)
+        @stats_pitching_batter     = StatsBase.new(     GC_PLAYER_PITCHING_BATTER_URI,        "stats_pitching_batter", fteam, team_id, fname, linitial, @id)
+        @stats_pitching_runs       = StatsBase.new(       GC_PLAYER_PITCHING_RUNS_URI,          "stats_pitching_runs", fteam, team_id, fname, linitial, @id)
+        @stats_pitching_pitch      = StatsBase.new(      GC_PLAYER_PITCHING_PITCH_URI,         "stats_pitching_pitch", fteam, team_id, fname, linitial, @id)
+        @stats_fielding_standard   = StatsBase.new(   GC_PLAYER_FIELDING_STANDARD_URI,      "stats_fielding_standard", fteam, team_id, fname, linitial, @id)
+        @stats_fielding_catcher    = StatsBase.new(   GC_PLAYER_FIELDING_CATCHING_URI,       "stats_fielding_catcher", fteam, team_id, fname, linitial, @id)
     end
 
     def display_xml
@@ -110,7 +74,7 @@ class Player
         @stats_pitching_pitch.display_xml
         @stats_fielding_standard.display_xml
         @stats_fielding_catcher.display_xml
-        @stats_spray_chart.display_xml
+        #@stats_spray_chart.display_xml
         puts "</player>"
     end
 end

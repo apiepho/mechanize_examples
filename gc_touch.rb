@@ -23,16 +23,6 @@ class Touch
 
     end
 
-    def display
-        puts "%s%s" % [ $indent.str, "touch: "]
-        $indent.increase
-        puts "%s%s%s" % [ $indent.str, "name: ",     @name ]
-        puts "%s%s%s" % [ $indent.str, "href: ",     @href ]     if $options.debug
-        puts "%s%s%s" % [ $indent.str, "number: ",   @number ]
-        puts "%s%s%s" % [ $indent.str, "position: ", @position ]
-        $indent.decrease
-    end
-
     def display_xml
         puts "<touch>"
         puts "<name>%s</name>"         % @name

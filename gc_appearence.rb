@@ -23,14 +23,6 @@ class Appearence
         @score_home = xml_elements[1].inner_text.to_i
     end
 
-    def display
-        puts "%s%s"        % [ $indent.str, "plate appearence: " ]
-        $indent.increase
-        @pitches.display
-        puts "%s%s%2d %2d" % [ $indent.str, "running score: ", @score_away, @score_home ]
-        $indent.decrease
-    end
-
     def display_xml
         puts "<appearence>"
         @pitches.display_xml

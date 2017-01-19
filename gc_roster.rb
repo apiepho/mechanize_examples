@@ -31,15 +31,6 @@ class Roster
     end
 
 
-    def display()
-        puts "%s%s" % [$indent.str, "roster:"]
-        $indent.increase
-        @players.each do |player|
-            player.display
-        end
-        $indent.decrease
-    end
-
     def display_xml()
         puts "<roster>"
         @players.each do |player|

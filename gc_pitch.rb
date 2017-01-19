@@ -14,16 +14,6 @@ class Pitch
         @play  = Play.new(@href) if not @href.empty?
     end
 
-    def display
-        puts "%s%s" % [ $indent.str, "pitch: " ]
-        $indent.increase
-        puts "%s%s%s" % [ $indent.str, "event: ", @event ]
-        puts "%s%s%s" % [ $indent.str, "href: ", @href ]   if not @href.empty?
-        @play.display                                      if not @href.empty?
-        puts "%s%s%s" % [ $indent.str, "recap: ", @recap ] if     @href.empty?
-        $indent.decrease
-    end
-
     def display_xml
         puts "<pitch>"
         puts "<event>%s</event>" % @event

@@ -100,12 +100,6 @@ require './gc_teams'
 #  position (Pitcher etc, Batter, Scorer)
 
 
-def display(teams)
-    puts "Results from parsing..."
-    $indent = Indent.new
-    teams.display()
-end
-
 def display_xml(teams)
     puts "<gc>"
     teams.display_xml()
@@ -203,8 +197,7 @@ if not $options.output === "cache"
     old_stdout = $stdout
     $stdout = File.open($options.file, "w") if not $options.file.nil?
 
-    display(teams)     if not $options.xml
-    display_xml(teams) if     $options.xml
+    display_xml(teams) if $options.xml
 
     # restore stdout
     $stdout = old_stdout

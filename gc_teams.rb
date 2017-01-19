@@ -53,15 +53,6 @@ class Teams
         result
     end
 
-    def display()
-        @teams.each do |team|
-            team.display
-        end
-        puts $total_teams    if $options.debug
-        puts $total_players  if $options.debug
-        puts $total_games    if $options.debug
-    end
-
     def display_xml()
         puts "<teams>"
         @teams.each do |team|

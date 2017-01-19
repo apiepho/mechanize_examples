@@ -35,25 +35,6 @@ class Play
         end
     end
 
-    def display
-        puts "%s%s" % [ $indent.str, "play: "]
-        $indent.increase
-        puts "%s%s" % [ $indent.str, "defense: "]
-        $indent.increase
-        @defense.each do |touch|
-            touch.display
-        end
-        $indent.decrease
-        puts "%s%s" % [ $indent.str, "offense: "]
-        $indent.increase
-        @offense.each do |touch|
-            touch.display
-        end
-        $indent.decrease
-        puts "%s%s%s" % [ $indent.str, "recap: ", @recap ]
-        $indent.decrease
-    end
-
     def display_xml
         puts "<play>"
         puts "<defense>"

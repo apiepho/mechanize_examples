@@ -5,8 +5,9 @@ require './gc_common'
 
 class StatsBase
 
-    def initialize(fteam, team_id, fname, linitial, player_id)
-        uri = @uri_fmt % [GC_BASE_URI, fteam, team_id, fname, linitial, player_id]
+    def initialize(uri_fmt, stat_name, fteam, team_id, fname, linitial, player_id)
+        @stat_name = stat_name
+        uri = uri_fmt % [GC_BASE_URI, fteam, team_id, fname, linitial, player_id]
         $browser.goto(uri)
         temp = $browser.html
 
@@ -33,22 +34,6 @@ class StatsBase
             inner_html = td.inner_html.strip
             @vals  << inner_html if not inner_html.include?("All")
         end
-    end
-
-    def display
-        puts "%s%s: " % [ $indent.str, @stat_name ]
-        $indent.increase
-        str = ""
-        @syms.each do |sym|
-            str += "%-8s" % sym
-        end
-        puts "%s%s" % [ $indent.str, str ]
-        str = ""
-        @vals.each do |val|
-            str += "%-8s" % val
-        end
-        puts "%s%s" % [ $indent.str, str ]
-        $indent.decrease
     end
 
     def display_xml

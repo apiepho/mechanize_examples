@@ -9,7 +9,6 @@ require 'pp'
 require 'watir'
 
 require './gc_browser'
-require './gc_indent'
 
 
 GC_BASE_URI  = 'https://gc.com'
@@ -52,7 +51,6 @@ GC_PLAYER_BATTING_SPRAY_URI       = "%s/p/p-%s/spray-chart"
 GC_TEAMS_URI = GC_BASE_URI + '/teams'
 GC_PLAYS_URI = GC_BASE_URI + "/game-%s/plays"
 
-$indent = nil
 $options = nil
 $browser = nil
 $browser_private = nil

@@ -13,15 +13,6 @@ class Appearences
         end
     end
 
-    def display
-        $indent.increase
-        @appearences.each do |appearence|
-            appearence.display
-        end
-        $indent.decrease
-    end
-
-
     def display_xml
         puts "<appearences>"
         @appearences.each do |appearence|

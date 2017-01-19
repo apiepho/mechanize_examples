@@ -47,6 +47,7 @@ fmts << "GC_PLAYER_FIELDING_CATCHING_URI"
 #fmts << "GC_PLAYER_BATTING_SPRAY_URI"
 
 
+=begin
 def get_contents(file, name, fmt)
     temp = file.gsub("gc_", "").gsub(".rb", "")
 	result = "\n"
@@ -83,13 +84,17 @@ files.each do |file|
 	temp = temp.gsub("\.rb", "")
     puts "require './%s'\n" % temp
 end
+=end
 
 # stdout the create lines
 puts ""
 files.each_with_index do |file, index|
+    fmt  = fmts[index].to_s
+    name = names[index].to_s
 	temp = file.to_s
 	temp = temp.gsub("gc_", "").gsub("\.rb", "")
-    puts "        @%-25s = %s.new(fteam, team_id, fname, linitial, @id)\n" % [temp, names[index]]
+    temp2 = "\"%s\"" % temp
+    puts "        @%-25s = StatsBase.new(%34s, %30s, fteam, team_id, fname, linitial, @id)\n" % [temp, fmt, temp2]
 end
         
 # stdout the dislay lines

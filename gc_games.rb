@@ -21,15 +21,6 @@ class Games
         result
     end
 
-    def display
-        puts "%s%s"        % [ $indent.str, "games:" ]
-        $indent.increase
-        @games.each do |game|
-            game.display
-        end
-        $indent.decrease
-    end
-
     def display_xml
         puts "<games>"
         @games.each do |game|

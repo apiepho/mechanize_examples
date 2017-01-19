@@ -23,11 +23,6 @@ class InningHalf
         @appearences = Appearences.new(xml_elements)
     end
 
-    def display
-        puts "%s%s" % [ $indent.str, @inning_half_str ]
-        @appearences.display
-    end
-
     def display_xml
         puts "<inning_half>"
         puts "<description>%s</description>" % @inning_half_str

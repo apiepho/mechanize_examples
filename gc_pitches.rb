@@ -15,16 +15,6 @@ class Pitches
         @pitches = @pitches.reverse
     end
 
-    def display
-        puts "%s%s" % [ $indent.str, "pitches:" ]
-        $indent.increase
-        @pitches.each do |pitch|
-            pitch.display
-        end
-        $indent.decrease
-        puts "%s%s%d"      % [ $indent.str, "pitches total: ", @pitches.length ]
-    end
-
     def display_xml
         puts "<pitches>"
         @pitches.each do |pitch|

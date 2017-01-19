@@ -92,20 +92,6 @@ class Game
         @innings = Innings.new(xml_elements)
     end
 
-    def display
-        puts "%s%s %s" % [ $indent.str, @at_vs, @other_team_name ]
-        $indent.increase
-        puts "%s%s"      % [ $indent.str, @date.strftime("%A, %b %d %Y %l:%M %p") ]
-        puts "%s%s%s"    % [ $indent.str, "game_id:  ", @id ] if $options.debug
-        puts "%s%s%s"    % [ $indent.str, "location: ", @location ]
-        puts "%s%s%s"    % [ $indent.str, "us:       ", @score_us ]
-        puts "%s%s%s"    % [ $indent.str, "them:     ", @score_them ]
-        puts "%s%s%s"    % [ $indent.str, "result:   ", @win_lose_tie ]
-        puts "%s%s%s"    % [ $indent.str, "recap:    ", @recap ]
-        @innings.display
-        $indent.decrease
-    end
-
     def display_xml
         puts "<game>"
         puts "<other_team_name>%s</other_team_name>" % @other_team_name

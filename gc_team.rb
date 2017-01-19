@@ -83,20 +83,6 @@ class Team
         result
     end
 
-    def display
-        puts "%s%s"        % [ $indent.str, @name ]
-        $indent.increase
-        puts "%s%s"        % [ $indent.str, @href ]
-        puts "%s%s"        % [ $indent.str, @guid ] if $options.debug
-        puts "%s%s"        % [ $indent.str, @city ]
-        puts "%s%s"        % [ $indent.str, @sport]
-        puts "%s%s-%s"     % [ $indent.str, @season, @year ]
-        puts "%s%d-%d-%d"  % [ $indent.str, @wins, @losses, @ties ]
-        @roster.display
-        @games.display
-        $indent.decrease
-    end
-
     def display_xml
         puts "<team>"
         puts "<name>%s</name>"     %  @name

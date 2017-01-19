@@ -15,15 +15,6 @@ class Innings
         end
     end
 
-    def display
-        puts "%s%s"      % [ $indent.str, "game details:" ]
-        $indent.increase
-        @inning_halfs.each do |inning_half|
-            inning_half.display
-        end
-        $indent.decrease
-    end
-
     def display_xml
         puts "<innings>"
         @inning_halfs.each do |inning_half|
