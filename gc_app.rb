@@ -11,6 +11,7 @@ require './gc_teams'
 
 # TODO: Summary list of TODO items
 # - finish spray chart stats
+# - consolidate stats
 # - how to handle cache of stat pages mid season, as games are added?
 # - parse lines-ups from game data as gc_lineups.rb
 # - add input from xml to speed stats generation work
