@@ -12,11 +12,15 @@ require './gc_teams'
 # TODO: Summary list of TODO items
 # - parse GC stats if available, finish 12 new classes
 # - parse lines-ups from game data as gc_lineups.rb
+# - add input from xml to speed stats generation work
 # - start generation of stats
 # - compare generated stats with GC stats
 # - merge duplicate players in roster.rb
 
 # - add copyright to header of all files
+# - add setup of ruby enviroment
+# - add good readme (think about adding to linked in)
+# - new repo for gc_app
 
 # General structure:
 # (all files require gc_common)

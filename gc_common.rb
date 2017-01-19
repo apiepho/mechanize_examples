@@ -61,4 +61,3 @@ $browser_private = nil
 $total_teams = 0
 $total_players = 0
 $total_games = 0
-
