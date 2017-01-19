@@ -10,11 +10,8 @@ require './gc_teams'
 
 
 # TODO: Summary list of TODO items
-# - restore from file as xml
-# - save to json string
-
-# - parse lines-ups from game data as gc_lineups.rb
 # - parse GC stats if available, finish 12 new classes
+# - parse lines-ups from game data as gc_lineups.rb
 # - start generation of stats
 # - compare generated stats with GC stats
 # - merge duplicate players in roster.rb

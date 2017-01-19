@@ -1,6 +1,18 @@
 # add copyright header
 
 require './gc_common'
+require './gc_stats_batting_standard'
+require './gc_stats_batting_speed'
+require './gc_stats_batting_team_impact'
+require './gc_stats_pitching_standard'
+require './gc_stats_pitching_efficiency'
+require './gc_stats_pitching_command'
+require './gc_stats_pitching_batter'
+require './gc_stats_pitching_runs'
+require './gc_stats_pitching_pitch'
+require './gc_stats_fielding_standard'
+require './gc_stats_fielding_catcher'
+require './gc_stats_spray_chart'
 
 class Player
 
@@ -35,63 +47,24 @@ class Player
         end
 
         # cycle thru player stat pages
-        # TODO: build classes
-        #   BattingStandard
-        #   BattingSpeed
-        #   BattingTeamImpact
-        #   PitchingStandard
-        #   PitchingEfficiency
-        #   PitchingCommand
-        #   PitchingBatterResults
-        #   PitchingRuns
-        #   PitchingPitchBreakdown
-        #   FieldingStandard
-        #   FieldingCatching
-        #   SprayChart
-        # NOTE: could build simpler uri like https://p/p-<id>/batting/standard
-        #       but that would make it more difficult to inspect cache files
         temp     = team_href.split("/")
         temp     = temp[5].split("-")
         fteam    = temp[0]
         team_id  = temp[-1]
         fname    = player_json["fname"].downcase
         linitial = player_json["lname"].downcase[0]
-        uri      = GC_PLAYER_BATTING_STANDARD_URI    % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
-        uri      = GC_PLAYER_BATTING_SPEED_URI       % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
-        uri      = GC_PLAYER_BATTING_TEAMIMPACT_URI  % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
-        uri      = GC_PLAYER_PITCHING_STANDARD_URI   % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
-        uri      = GC_PLAYER_PITCHING_EFFICIENCY_URI % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
-        uri      = GC_PLAYER_PITCHING_COMMAND_URI    % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
-        uri      = GC_PLAYER_PITCHING_BATTER_URI     % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
-        uri      = GC_PLAYER_PITCHING_RUNS_URI       % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
-        uri      = GC_PLAYER_PITCHING_PITCH_URI      % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
-        uri      = GC_PLAYER_FIELDING_STANDARD_URI   % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
-        uri      = GC_PLAYER_FIELDING_CATCHING_URI   % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
-        uri      = GC_PLAYER_BATTING_SPRAY_URI       % [GC_BASE_URI, fteam, team_id, fname, linitial, @id]
-        $browser.goto(uri)
-        temp = $browser.html
+        @stats_batting_standard    = StatsBattingStandard.new(fteam, team_id, fname, linitial, @id)
+        @stats_batting_speed       = StatsBattingSpeed.new(fteam, team_id, fname, linitial, @id)
+        @stats_batting_team_impact = StatsBattingTeamImpact.new(fteam, team_id, fname, linitial, @id)
+        @stats_pitching_standard   = StatsPitchingStandard.new(fteam, team_id, fname, linitial, @id)
+        @stats_pitching_efficiency = StatsPitchingEfficiency.new(fteam, team_id, fname, linitial, @id)
+        @stats_pitching_command    = StatsPitchingCommand.new(fteam, team_id, fname, linitial, @id)
+        @stats_pitching_batter     = StatsPitchingBatterResults.new(fteam, team_id, fname, linitial, @id)
+        @stats_pitching_runs       = StatsPitchingRuns.new(fteam, team_id, fname, linitial, @id)
+        @stats_pitching_pitch      = StatsPitchingPitchBreakdown.new(fteam, team_id, fname, linitial, @id)
+        @stats_fielding_standard   = StatsFieldingStandard.new(fteam, team_id, fname, linitial, @id)
+        @stats_fielding_catcher    = StatsFieldingCatching.new(fteam, team_id, fname, linitial, @id)
+        @stats_spray_chart         = StatsSprayChart.new(fteam, team_id, fname, linitial, @id)
     end
 
     def display
@@ -101,6 +74,21 @@ class Player
         puts "%s%s%s" % [ $indent.str, "throws:      ", @throws    ]
         puts "%s%s%s" % [ $indent.str, "bats:        ", @bats      ]
         puts "%s%s%s" % [ $indent.str, "position(s): ", @positions ]
+        puts "%s%s"   % [ $indent.str, "stats: " ]
+        $indent.increase
+        @stats_batting_standard.display
+        @stats_batting_speed.display
+        @stats_batting_team_impact.display
+        @stats_pitching_standard.display
+        @stats_pitching_efficiency.display
+        @stats_pitching_command.display
+        @stats_pitching_batter.display
+        @stats_pitching_runs.display
+        @stats_pitching_pitch.display
+        @stats_fielding_standard.display
+        @stats_fielding_catcher.display
+        @stats_spray_chart.display
+        $indent.decrease
     end
 
     def display_xml
@@ -111,6 +99,18 @@ class Player
         puts "<throws>%s</throws>"       % @throws
         puts "<bats>%s</bats>"           % @bats
         puts "<positions>%s</positions>" % @positions
+        @stats_batting_standard.display_xml
+        @stats_batting_speed.display_xml
+        @stats_batting_team_impact.display_xml
+        @stats_pitching_standard.display_xml
+        @stats_pitching_efficiency.display_xml
+        @stats_pitching_command.display_xml
+        @stats_pitching_batter.display_xml
+        @stats_pitching_runs.display_xml
+        @stats_pitching_pitch.display_xml
+        @stats_fielding_standard.display_xml
+        @stats_fielding_catcher.display_xml
+        @stats_spray_chart.display_xml
         puts "</player>"
     end
 end
