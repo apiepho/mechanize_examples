@@ -10,9 +10,11 @@ require './gc_teams'
 
 
 # TODO: Summary list of TODO items
-# - parse GC stats if available, finish 12 new classes
+# - finish spray chart stats
+# - how to handle cache of stat pages mid season, as games are added?
 # - parse lines-ups from game data as gc_lineups.rb
 # - add input from xml to speed stats generation work
+# - how to get formulas for all 148+ 20 for spray chart?
 # - start generation of stats
 # - compare generated stats with GC stats
 # - merge duplicate players in roster.rb
