@@ -52,11 +52,35 @@ GC_PLAYER_BATTING_SPRAY_URI       = "%s/p/p-%s/spray-chart"
 GC_TEAMS_URI = GC_BASE_URI + '/teams'
 GC_PLAYS_URI = GC_BASE_URI + "/game-%s/plays"
 
-$options = nil
-$browser = nil
+$options         = nil
+$gc_parse        = nil
+$browser         = nil
 $browser_private = nil
 
 # debug/status
-$total_teams = 0
-$total_players = 0
-$total_games = 0
+$total_teams     = 0
+$total_players   = 0
+$total_games     = 0
+
+
+class GCParse
+
+    def initialize()
+    end
+
+    def decode(html_str)
+        temp = html_str                                            # get body as a string
+        json_encoded = temp.match(/ \$\.parseJSON.*$/)             # get the JSON data
+        json_encoded = json_encoded.to_s                           # convert MatchData to a string
+        json_encoded = json_encoded.gsub("\\u0022", "\"")          # convert unicode quote
+        json_encoded = json_encoded.gsub("\\u002D", "-")           # convert unicode hyphen
+        json_encoded = json_encoded.gsub(" \$\.parseJSON(\'", "")  # remove leading cruft
+        json_encoded = json_encoded.gsub(" \$\.parseJSON(\"", "")  # remove leading cruft
+        json_encoded = json_encoded.gsub("\'),", "")               # remove trailing cruft
+        json_encoded = json_encoded.gsub("\"),", "")               # remove trailing cruft
+        json_decoded = JSON.parse json_encoded                     # conver to a hash
+        json_decoded
+    end
+end
+
+

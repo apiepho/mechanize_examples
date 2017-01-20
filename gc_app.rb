@@ -12,6 +12,7 @@ require './gc_teams'
 # TODO: Summary list of TODO items
 # - parse lines-ups from game data as gc_lineups.rb
 # - add input from xml to speed stats generation work?? or is that another app for rails server?
+# - for generated stats, will need to parse new apperence pitch_summary and play_description
 # - start generation of some stats (batting: PA, BA, OBP, SLG, field: PO E, catch: INN PB SB SB-ATT CS CS% PIK CI)
 # - compare generated stats with GC stats
 
@@ -73,31 +74,11 @@ require './gc_teams'
 #     apperence++
 
 # appearance
-#   score_away
-#   score_home
-#   pitches
-#     pitch++
-
-# pitch
-#
-#   event (pitch, event)
-#   href
-#   play++
-#   recap (ie. ball, strike, play.recap)
-
-# play
-#   defense touches
-#     touch++
-#   offense touches
-#     touch++
-#   recap
-
-# touch
-#  name
-#  player href
-#  number
-#  position (Pitcher etc, Batter, Scorer)
-
+#   result
+#   score
+#   outs
+#   pitch_summary
+#   play_description
 
 def display_xml(teams)
     puts "<gc>"
@@ -124,7 +105,6 @@ parser = OptionParser.new do |opt|
     opt.on('-G', '--Games <count>',                        '(debug)    limit games per team')                                { |o| $options.games        = o    }
     opt.on('-I', '--Innings <count>',                      '(debug)    limit inning halfs per game')                         { |o| $options.halfs        = o    }
     opt.on('-A', '--Appearences <count>',                  '(debug)    limit plate appearences per game')                    { |o| $options.appearences  = o    }
-    opt.on('-P', '--Pitches <count>',                      '(debug)    limit pitches per plate appearences')                 { |o| $options.pitches      = o    }
     opt.on('-D', '--Debug',                                '(debug)    show debug messages')                                 { |o| $options.debug        = true }
 end
 parser.parse!
@@ -136,6 +116,11 @@ if $options.input.nil?
 end
 if ["web"].include?($options.input) and $options.src.nil?
     $options.src   = GC_BASE_URI
+end
+if ["xml"].include?($options.input)
+        puts "Error: Input from xml not yet implemented."
+        puts parser.help
+        exit
 end
 if $options.output.nil?
     $options.output = "stdout"
@@ -178,15 +163,8 @@ if not $options.cache.nil?
     end
 end
 
+$gc_parse = GCParse.new
 $browser = Browser.new
-=begin
-# get a new instance of Watir class (NOTE: need chromedriver in path,
-# get chromedriver from https://sites.google.com/a/chromium.org/chromedriver/downloads)
-$browser = Watir::Browser.new(:chrome)
-$browser.window.resize_to(1200, 1000)
-#$browser.window.move_to(100, 100)
-=end
-
 
 # build teams
 teams = Teams.new()

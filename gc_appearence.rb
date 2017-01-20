@@ -1,35 +1,46 @@
 # add copyright header
 
 require './gc_common'
-require './gc_pitches'
 
 class Appearence
     attr_reader :score_away, :score_home
 
-    def initialize(plate_appearence_xml_element)
-        @xml_element = plate_appearence_xml_element
-
-        # parse plate_appearence_xml_element with Nokogiri
-        #doc = Nokogiri::HTML(temp)
-        xml_elements = @xml_element.css('.gs_pitch_li')
-        xml_elements = xml_elements.reverse
-
-        # build list of pitches
-        @pitches = Pitches.new(xml_elements)
-
-        # parse running score
-        xml_elements = @xml_element.css('.scoreColumn')
-        @score_away = xml_elements[0].inner_text.to_i
-        @score_home = xml_elements[1].inner_text.to_i
+    def initialize(play_xml_element)
+=begin
+# example of an xml_element
+    <h4 class="sabertooth_play_header pvs">
+        <div>Single</div>        
+            <div>
+                <span class="separator"> | </span>
+                <span class="score">TN 12 - RHS 4</span>
+            </div>
+            <div>
+                <span class="separator"> | </span>
+                <span class="outs">2 Outs</span>
+            </div>        
+    </h4>    
+        <section class="pitch_summary pvs">Strike 1 looking, Ball 1, Ball 2, Ball 3, In play.</section>
+        <section class="play_description pvs">PlayerB singles on a ground ball to second baseman L Gomez. PlayerA out at 2nd, caught running. PlayerI advances to 3rd. PlayerH scores.</section>
+</td>
+=end
+        @result           = play_xml_element.css('h4 div')
+        @result           = (@result.nil? ? "" : @result.text)
+        @result           = @result.split(" ")[0]
+        @score            = play_xml_element.css('.score')
+        @score            = (@score.nil? ? "" : @score.text)
+        @outs             = play_xml_element.css('.outs')
+        @outs             = (@outs.nil? ? "" : @outs.text)
+        @pitch_summary    = play_xml_element.css('.pitch_summary').text
+        @play_description = play_xml_element.css('.play_description').text
     end
 
     def display_xml
         puts "<appearence>"
-        @pitches.display_xml
-        puts "<running_score>"
-        puts "<away>%d</away>" % @score_away
-        puts "<home>%d</home>" % @score_home
-        puts "</running_score>"
+        puts "<result>%s</result>"                     % @result
+        puts "<outs>%s</outs>"                         % @outs
+        puts "<score>%s</score>"                       % @score
+        puts "<pitch_summary>%s</pitch_summary>"       % @pitch_summary
+        puts "<play_description>%s</play_description>" % @play_description
         puts "</appearence>"
     end
 end

@@ -6,8 +6,8 @@ require './gc_roster'
 
 class Team
 
-    def initialize(href)
-        puts href if $options.debug
+    def initialize(team_href)
+        puts team_href if $options.debug
         # team data comes from 2 parts:
         # 1. data gleened from the specific team page href (given parameter)
         # 2. data from the specfic team page
@@ -16,14 +16,14 @@ class Team
         # parse the team href
         # using http://rubular.com/ to figure out regex for something like
         # "/t/spring-2016/roosevelt-rough-riders-varsity-56dfa90020277d0024b46bbb"
-        match = href.match(/\/t\/([a-z]+)-([0-9]+)\/([a-z0-9-]+)-([a-z0-9]+\z)/).to_a
+        match = team_href.match(/\/t\/([a-z]+)-([0-9]+)\/([a-z0-9-]+)-([a-z0-9]+\z)/).to_a
         # should produce:
         # match[0] = /t/spring-2016/roosevelt-rough-riders-varsity-56dfa90020277d0024b46bbb
         # match[1] = spring
         # match[2] = 2016
         # match[3] = roosevelt-rough-riders-varsity
         # match[4] = 56dfa90020277d0024b46bbb
-        @href = href
+        @href = team_href
         @name   = match[3].gsub("-", " ").split.map{|i| i.capitalize}.join(' ')
         @season = match[1].capitalize
         @year   = match[2]
@@ -52,14 +52,7 @@ class Team
         # mechanize/nokogiri do NOT run javascript, but GC passes game summary data as a JSON string
         # watir can get html AFTER javascript, but full set of team json if always give, so this
         # way we don't need special uri for teams.
-        temp = $browser.html                                        # get body as a string
-        json_encoded = temp.match(/ \$\.parseJSON.*$/)             # get the JSON data with GC game data
-        json_encoded = json_encoded.to_s                           # convert MatchData to a string
-        json_encoded = json_encoded.gsub("\\u0022", "\"")          # convert unicode quote
-        json_encoded = json_encoded.gsub("\\u002D", "-")           # convert unicode hyphen
-        json_encoded = json_encoded.gsub(" \$\.parseJSON(\'", "")  # remove leading cruft
-        json_encoded = json_encoded.gsub("\'),", "")               # remove trailing cruft
-        json_decoded = JSON.parse json_encoded                     # conver to a hash
+        json_decoded = $gc_parse.decode($browser.html)
         json_decoded = json_decoded.reverse                        # games are listed in newest first
 
         # from json game summary, compute W-L-T record and build list of Games

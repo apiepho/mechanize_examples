@@ -5,10 +5,10 @@ require './gc_game'
 
 class Games
 
-    def initialize(games_json_decoded)
+    def initialize(games_json)
         # from json game summary,  build list of Games
         @games = []
-        games_json_decoded.each do |game_json|
+        games_json.each do |game_json|
             next if not supported_game(game_json)
             @games << Game.new(game_json)
         end
@@ -16,7 +16,7 @@ class Games
 
     def supported_game(game_json)
         result = true
-         result = false if not $options.games.nil? and @games.length >= $options.games.to_i
+        result = false if not $options.games.nil? and @games.length >= $options.games.to_i
         result = false if game_json.nil? or game_json["game_id"].nil?
         result
     end

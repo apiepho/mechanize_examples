@@ -86,13 +86,36 @@ class Game
 
         # parse html with Nokogiri
         doc = Nokogiri::HTML(temp)
-        xml_elements = doc.css('.sabertooth_pbp_inning_row')
-        xml_elements = xml_elements.reverse
+        xml_elements       = doc.css('tr')
+        xml_elements       = xml_elements.reverse
+
+        # the reverse order isn't quite right, need each inning before plays for that inning
+        xml_elements_max   = xml_elements.length - 1
+        xml_elements_array = []
+        need_inning        = true
+        (0..xml_elements_max).each do |index1|
+            element1 = xml_elements[index1]
+            is_play_row = (element1.attribute('class').to_s.include?('sabertooth_pbp_row') ? true : false)
+            if is_play_row
+                if need_inning
+                    # spin forward to find next inning
+                    (index1..xml_elements_max).each do |index2|
+                        element2 = xml_elements[index2]
+                        is_inning_row = (element2.attribute('class').to_s.include?('sabertooth_pbp_inning_row') ? true : false)                        
+                        if is_inning_row
+                            xml_elements_array << element2
+                            break
+                        end
+                    end
+                    need_inning = false
+                end
+                xml_elements_array << element1 
+            end
+            need_inning = true if element1.attribute('class').to_s.include?('sabertooth_pbp_inning_row')
+       end
 
         # build list of inning halfs
-        @innings = Innings.new(xml_elements)
-        pp @innings
-        exit
+        @innings = Innings.new(xml_elements_array)
        
 =begin        
         # parse game lineups (TODO: move to new class)
@@ -100,23 +123,11 @@ class Game
         puts uri
         $browser.goto(uri)
 
-        # from game recap page, parse jsom to get lineups (not shown in html)
-        temp = $browser.html                                       # get body as a string
-        json_encoded = temp.match(/ \$\.parseJSON.*$/)             # get the JSON data
-        json_encoded = json_encoded.to_s                           # convert MatchData to a string
-        json_encoded = json_encoded.gsub("\\u0022", "\"")          # convert unicode quote
-        json_encoded = json_encoded.gsub("\\u002D", "-")           # convert unicode hyphen
-        json_encoded = json_encoded.gsub(" \$\.parseJSON(\'", "")  # remove leading cruft
-        json_encoded = json_encoded.gsub(" \$\.parseJSON(\"", "")  # remove leading cruft
-        json_encoded = json_encoded.gsub("\'),", "")               # remove trailing cruft
-        json_encoded = json_encoded.gsub("\"),", "")               # remove trailing cruft
-        json_decoded = JSON.parse json_encoded                     # conver to a hash
-        #json_decoded = json_decoded.reverse                        # games are listed in newest first
+        # from game recap page, parse json to get lineups (not shown in html)
+        json_decoded = $gc_parse.decode($browser.html)
         pp json_decoded
         exit
 =end
-
-
 
     end
 

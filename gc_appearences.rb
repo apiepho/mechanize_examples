@@ -5,12 +5,15 @@ require './gc_appearence'
 
 class Appearences
 
-    def initialize(appearence_xml_element)
+    def initialize(play_xml_elements)
         @appearences = []
-        appearence_xml_element.each do |xml_element|
-            next if not $options.appearences.nil? and @appearences.length >= $options.appearences.to_i
-            @appearences << Appearence.new(xml_element)
-        end
+
+        # skip first (inning half) and build appearence for each play row
+        xml_elements_max   = play_xml_elements.length - 1
+        (1..xml_elements_max).each do |index|
+            element = play_xml_elements[index]
+            @appearences << Appearence.new(element)
+       end
     end
 
     def display_xml

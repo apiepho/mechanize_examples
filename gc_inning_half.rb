@@ -5,21 +5,8 @@ require './gc_appearences'
 
 class InningHalf
 
-    def initialize(inning_half_xml_element)
-=begin
-<tbody class="inning_half play_entry inning_5_half_1 ">
-<tr class="plateAppearanceRow bbm">...</tr>
-...
-</tbody>
-=end
-        @inning_half_str = inning_half_xml_element.values.join(" ").split(" ").join(", ")
-
-        # parse inning_half_xml_element with Nokogiri
-        #doc = Nokogiri::HTML(temp)
-        xml_elements = inning_half_xml_element.css('.plateAppearanceRow')
-        xml_elements = xml_elements.reverse
-
-        # build list of plate appearences
+    def initialize(xml_elements)
+        @inning_half_str = xml_elements[0].text
         @appearences = Appearences.new(xml_elements)
     end
 
