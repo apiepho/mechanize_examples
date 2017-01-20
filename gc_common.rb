@@ -13,8 +13,9 @@ require './gc_browser'
 
 GC_BASE_URI  = 'https://gc.com'
 GC_LOGIN_URI = GC_BASE_URI + '/login'
-GC_ROSTER_URI = "%s/roster"           # given team guid
-GC_PLAYER_URI = "%s/p/%s"             # given team guid and player fname-lastinitial-guid
+GC_ROSTER_URI = "%s/roster"                # given team guid
+GC_PLAYER_URI = "%s/p/%s"                  # given team guid and player fname-lastinitial-guid
+GC_RECAP_URI  = "%s/game-%s/recap-story"   # given base and game guid
 
 # parameters for the following: [GC_BASE_URI, fteam, team_id, fname, linitial, player_id]
 GC_PLAYER_BATTING_STANDARD_URI    = "%s/t/%s-%s/p/%s-%s-%s/batting/standard"

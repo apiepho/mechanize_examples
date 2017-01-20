@@ -76,20 +76,48 @@ class Game
         # get body as a string, waiting for javascript to finish populating
         temp = $browser.html
         seconds = 0
-        while not temp.include?(" inning_1_half_0 \"") and seconds < 30 do
+        while not temp.include?("TOP 1ST") and seconds < 30 do
             sleep(1)
             seconds += 1
             puts "." if $options.debug
             temp = $browser.html(true)
         end
+        puts "WARNING: page time out on: %s" % uri if seconds > 30
 
         # parse html with Nokogiri
         doc = Nokogiri::HTML(temp)
-        xml_elements = doc.css('.inning_half')
+        xml_elements = doc.css('.sabertooth_pbp_inning_row')
         xml_elements = xml_elements.reverse
 
         # build list of inning halfs
         @innings = Innings.new(xml_elements)
+        pp @innings
+        exit
+       
+=begin        
+        # parse game lineups (TODO: move to new class)
+        uri = GC_RECAP_URI % [ GC_BASE_URI, @id ]
+        puts uri
+        $browser.goto(uri)
+
+        # from game recap page, parse jsom to get lineups (not shown in html)
+        temp = $browser.html                                       # get body as a string
+        json_encoded = temp.match(/ \$\.parseJSON.*$/)             # get the JSON data
+        json_encoded = json_encoded.to_s                           # convert MatchData to a string
+        json_encoded = json_encoded.gsub("\\u0022", "\"")          # convert unicode quote
+        json_encoded = json_encoded.gsub("\\u002D", "-")           # convert unicode hyphen
+        json_encoded = json_encoded.gsub(" \$\.parseJSON(\'", "")  # remove leading cruft
+        json_encoded = json_encoded.gsub(" \$\.parseJSON(\"", "")  # remove leading cruft
+        json_encoded = json_encoded.gsub("\'),", "")               # remove trailing cruft
+        json_encoded = json_encoded.gsub("\"),", "")               # remove trailing cruft
+        json_decoded = JSON.parse json_encoded                     # conver to a hash
+        #json_decoded = json_decoded.reverse                        # games are listed in newest first
+        pp json_decoded
+        exit
+=end
+
+
+
     end
 
     def display_xml
