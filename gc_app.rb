@@ -10,19 +10,18 @@ require './gc_teams'
 
 
 # TODO: Summary list of TODO items
-# - finish spray chart stats
-# - consolidate stats
-# - how to handle cache of stat pages mid season, as games are added?
 # - parse lines-ups from game data as gc_lineups.rb
-# - add input from xml to speed stats generation work
-# - how to get formulas for all 148+ 20 for spray chart?
-# - start generation of stats
+# - add input from xml to speed stats generation work?? or is that another app for rails server?
+# - start generation of some stats (batting: PA, BA, OBP, SLG, field: PO E, catch: INN PB SB SB-ATT CS CS% PIK CI)
 # - compare generated stats with GC stats
+
+# - how to handle cache of stat pages mid season, as games are added?
 # - merge duplicate players in roster.rb
 
 # - add copyright to header of all files
-# - add setup of ruby enviroment
-# - add good readme (think about adding to linked in)
+# - add SETUP.TXT (from history)
+# - add README.TXT
+# - generate Linkedin Blurb
 # - new repo for gc_app
 
 

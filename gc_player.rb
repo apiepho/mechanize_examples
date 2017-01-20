@@ -2,6 +2,7 @@
 
 require './gc_common'
 require './gc_stats_base'
+require './gc_stats_spray_chart'
 
 class Player
 
@@ -53,6 +54,9 @@ class Player
         @stats_pitching_pitch      = StatsBase.new(      GC_PLAYER_PITCHING_PITCH_URI,         "stats_pitching_pitch", fteam, team_id, fname, linitial, @id)
         @stats_fielding_standard   = StatsBase.new(   GC_PLAYER_FIELDING_STANDARD_URI,      "stats_fielding_standard", fteam, team_id, fname, linitial, @id)
         @stats_fielding_catcher    = StatsBase.new(   GC_PLAYER_FIELDING_CATCHING_URI,       "stats_fielding_catcher", fteam, team_id, fname, linitial, @id)
+        @stats_batting_spray_chart = StatsSprayChart.new( GC_PLAYER_BATTING_SPRAY_URI,     "stats_batting_spray_chart", fteam, team_id, fname, linitial, @id)
+
+
     end
 
     def display_xml
@@ -74,7 +78,7 @@ class Player
         @stats_pitching_pitch.display_xml
         @stats_fielding_standard.display_xml
         @stats_fielding_catcher.display_xml
-        #@stats_spray_chart.display_xml
+        @stats_batting_spray_chart.display_xml
         puts "</player>"
     end
 end
