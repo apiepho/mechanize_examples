@@ -63,6 +63,7 @@ class Browser
 
     def html(cache_off = false)
         result = nil
+        cache_off = true if not $options.wrtcache.nil?
         # test cache read
         if not $options.cache.nil? and not cache_off
             if File.file?(@cache_filename)

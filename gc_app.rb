@@ -16,7 +16,6 @@ require './gc_teams'
 # - start generation of some stats (batting: PA, BA, OBP, SLG, field: PO E, catch: INN PB SB SB-ATT CS CS% PIK CI)
 # - compare generated stats with GC stats
 
-# - how to handle cache of stat pages mid season, as games are added?
 # - merge duplicate players in roster.rb
 
 # - add copyright to header of all files
@@ -41,7 +40,6 @@ require './gc_teams'
 #   name
 #   location
 #   record
-#   other?
 #   roster
 #     player++
 #   games
@@ -52,8 +50,7 @@ require './gc_teams'
 #   name
 #   number
 #   positions
-#   other?
-#   stats_given++ (TODO)
+#   stats++
 
 # game
 #   id
@@ -64,7 +61,6 @@ require './gc_teams'
 #   score_home
 #   score_away
 #   win_lose_tie
-#   other?
 #   innings
 #     inning_half++
 
@@ -79,6 +75,20 @@ require './gc_teams'
 #   outs
 #   pitch_summary
 #   play_description
+
+# stats
+#   batting_standard
+#   batting_speed
+#   batting_team_impact
+#   pitching_standard
+#   pitching_efficiency
+#   pitching_command
+#   pitching_batter
+#   pitching_runs
+#   pitching_pitch
+#   fielding_standard
+#   fielding_catcher
+#   batting_spray_chart
 
 def display_xml(teams)
     puts "<gc>"
@@ -96,6 +106,7 @@ parser = OptionParser.new do |opt|
     opt.on('-e', '--email <email>',                        'login email for GameChanger')                                    { |o| $options.email        = o    }
     opt.on('-p', '--password <password>',                  'login password for GameChanger')                                 { |o| $options.password     = o    }
     opt.on('-c', '--cache <dir>',                          '(optional) enable auto-cache of web pages')                      { |o| $options.cache        = o    }
+    opt.on('-w', '--write cache only',                      '(optional) force writes of cache')                              { |o| $options.wrtcache     = true }
     opt.on('-f', '--offline',                              '(optional) run offline')                                         { |o| $options.offline      = true }
     opt.on('-l', '--list',                                 '(optional) list team urls')                                      { |o| $options.list         = true }
     opt.on('-Y', '--year <YYYY>',                          '(optional) specific year')                                       { |o| $options.year         = o    }
