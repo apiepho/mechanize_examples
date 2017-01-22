@@ -10,17 +10,19 @@ require './gc_teams'
 
 
 # TODO: Summary list of TODO items
-# - parse lines-ups from game data as gc_lineups.rb
+# - parse lines-ups from recap json as gc_recap.rb
 # - add input from xml to speed stats generation work?? or is that another app for rails server?
 # - for generated stats, will need to parse new apperence pitch_summary and play_description
 # - start generation of some stats (batting: PA, BA, OBP, SLG, field: PO E, catch: INN PB SB SB-ATT CS CS% PIK CI)
 # - compare generated stats with GC stats
 
 # - merge duplicate players in roster.rb
+# - change cache files to use .html
 
 # - add copyright to header of all files
 # - add SETUP.TXT (from history)
 # - add README.TXT
+# - add private README with references to sites I used???
 # - generate Linkedin Blurb
 # - new repo for gc_app
 

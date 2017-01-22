@@ -30,6 +30,16 @@ class Browser
         end
     end
 
+	def build_cache_filename(uri)
+        temp = uri.gsub($options.src, "")
+        temp = temp[1..-1]
+        temp = temp.gsub("/", "_")
+        temp = temp.gsub("?", "_")
+        temp = temp.gsub("=", "_")
+        temp = temp.gsub("&", "_")
+        @cache_filename = "%s/%s.html" % [ $options.cache, temp ]
+ 	end
+	
     def goto(uri)
         puts "getting %s ..." % uri if $options.debug
 
@@ -37,13 +47,7 @@ class Browser
         puts "GC.start, page_count: %d" % @page_count if (@page_count % 10) == 0 and $options.debug
         GC.start                                      if (@page_count % 10) == 0
 
-        if not $options.cache.nil?
-            # build cache_filename
-            temp = uri.gsub($options.src, "")
-            temp = temp[1..-1]
-            temp = temp.gsub("/", "_")
-            @cache_filename = "%s/%s" % [ $options.cache, temp ]
-        end
+        build_cache_filename(uri)
 
         result = nil
         # test cache read

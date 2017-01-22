@@ -1,0 +1,28 @@
+
+gc_app - 
+A Ruby based application to automate gathering baseball game data from an online
+service for youth/prep baseball teams.
+
+Combining my interest in youth sports and a desire to learn more about automated web testing
+and web scraping, the gc_app was born.
+
+This app solves two short falls:
+1) Allows reconstructing Game play by play data in true chronological (oldest to newest)
+order.
+2) Allows generation of game stats not supported in typical baseball stat sites.
+
+This tool is based on the following technologies:
+- Ruby
+- the Nokogiri Ruby gem for parsing HTML data
+- the Watir Ruby Gem, an implementation of the Selenium API for automated web site testing,
+  this is used for navigation of web sites
+- JSON parsing
+  
+The application itself is quite small, at around 1200 lines of commented Ruby code.  It 
+does all the web navigation of of team, player, and game pages from the GC site (pretty
+cool to watch the pages fly by), and gathers key data as it navigates and finally produces
+an xml file.  This xml file can be opened with any browser and specific data can be 
+inspected.  A future project will provide a nicer presentation of that data.
+
+For more details, checkout the README.txt in the GitHub project that can be found at:
+TBD

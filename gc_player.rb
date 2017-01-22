@@ -5,6 +5,7 @@ require './gc_stats_base'
 require './gc_stats_spray_chart'
 
 class Player
+	attr_reader :id, :name
 
     def initialize(team_href, player_json)
         # player data comes from roster data json from specific team page (given parameter)
@@ -55,8 +56,6 @@ class Player
         @stats_fielding_standard   = StatsBase.new(   GC_PLAYER_FIELDING_STANDARD_URI,      "stats_fielding_standard", fteam, team_id, fname, linitial, @id)
         @stats_fielding_catcher    = StatsBase.new(   GC_PLAYER_FIELDING_CATCHING_URI,       "stats_fielding_catcher", fteam, team_id, fname, linitial, @id)
         @stats_batting_spray_chart = StatsSprayChart.new( GC_PLAYER_BATTING_SPRAY_URI,     "stats_batting_spray_chart", fteam, team_id, fname, linitial, @id)
-
-
     end
 
     def display_xml

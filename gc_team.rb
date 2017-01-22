@@ -53,7 +53,7 @@ class Team
         # watir can get html AFTER javascript, but full set of team json if always give, so this
         # way we don't need special uri for teams.
         json_decoded = $gc_parse.decode($browser.html)
-        json_decoded = json_decoded.reverse                        # games are listed in newest first
+        json_decoded = json_decoded.reverse           # games are listed in newest first
 
         # from json game summary, compute W-L-T record and build list of Games
         @wins   = 0

@@ -4,10 +4,9 @@ require 'date'
 
 require './gc_common'
 require './gc_innings'
+require './gc_recap'
 
 class Game
-    #attr_accessor :score_us, :score_them
-
     def initialize(game_json)
         # game data comes from game data json from specific team page (given parameter)
 =begin
@@ -67,8 +66,6 @@ class Game
         @recap           =  game_json["recap_title"]
         puts @recap if $options.debug
 
-        # get game lineups
-
         # get game plays page
         uri = GC_PLAYS_URI % @id
         $browser.goto(uri)
@@ -116,18 +113,10 @@ class Game
 
         # build list of inning halfs
         @innings = Innings.new(xml_elements_array)
-       
-=begin        
-        # parse game lineups (TODO: move to new class)
-        uri = GC_RECAP_URI % [ GC_BASE_URI, @id ]
-        puts uri
-        $browser.goto(uri)
+        
+        # get game scorebook (including lineups)
+        @recap = Recap.new(@id)
 
-        # from game recap page, parse json to get lineups (not shown in html)
-        json_decoded = $gc_parse.decode($browser.html)
-        pp json_decoded
-        exit
-=end
 
     end
 
@@ -141,6 +130,7 @@ class Game
         puts "<them>%s</them>"                       % @score_them
         puts "<win_lose_tie>%s</win_lose_tie>"       % @win_lose_tie
         puts "<recap>%s</recap>"                     % @recap
+        @recap.display_xml
         @innings.display_xml
         puts "</game>"
     end
