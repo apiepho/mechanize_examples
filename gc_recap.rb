@@ -71,11 +71,27 @@ class Recap
 		lineups_away["pitching"].each do |player_id|
         	puts "%s   %s" % [ player_id, get_name(player_id) ]
 		end
+		puts ""       
+        puts "away batting:"
+		lineups_away["batting"].each_with_index do |slot, index|
+		    puts "slot %d" % (index + 1)
+			slot.each do |player_id|
+				puts "  %s   %s" % [ player_id, get_name(player_id) ]
+			end
+		end
 		
 		puts ""       
         puts "home pitching:"
-		lineups_home["pitching"].each do |player_id|
+		lineups_home["batting"].each do |player_id|
         	puts "%s   %s" % [ player_id, get_name(player_id) ]
+		end
+		puts ""       
+        puts "home batting:"
+		lineups_home["batting"].each_with_index do |slot, index|
+		    puts "slot %d" % (index + 1)
+			slot.each do |player_id|
+				puts "  %s   %s" % [ player_id, get_name(player_id) ]
+			end
 		end
 
 
