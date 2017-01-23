@@ -4,7 +4,7 @@ require 'date'
 
 require './gc_common'
 require './gc_innings'
-require './gc_recap'
+require './gc_boxscore'
 
 class Game
     def initialize(game_json)
@@ -114,8 +114,8 @@ class Game
         # build list of inning halfs
         @innings = Innings.new(xml_elements_array)
         
-        # get game scorebook (including lineups)
-        @recap = Recap.new(@id)
+        # get game boxscore (including lineups)
+        @boxscore = Boxscore.new(@id)
 
 
     end
@@ -129,8 +129,7 @@ class Game
         puts "<us>%s</us>"                           % @score_us
         puts "<them>%s</them>"                       % @score_them
         puts "<win_lose_tie>%s</win_lose_tie>"       % @win_lose_tie
-        puts "<recap>%s</recap>"                     % @recap
-        @recap.display_xml
+        @boxscore.display_xml
         @innings.display_xml
         puts "</game>"
     end
