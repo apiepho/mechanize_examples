@@ -107,6 +107,43 @@ class Boxscore
 		name
 	end
 	
+    def get_players(given_team_id, membership_json)
+        result = []
+        membership_json.each do |player_id, team_id|
+        	result << get_player(player_id) if team_id === given_team_id
+        end
+        result
+    end
+
+	def get_roster(roster_json)
+		result = []
+		roster_json.each do |player|
+			result << RosterName.new(player)
+		end
+		result
+	end
+
+	def get_pitching_lineup(lineup_json)
+		result = []
+        lineup_json.each_with_index do |player_id, index|
+            players = []
+            players << get_player(player_id)
+        	result << LineupSlot.new(index+1, players)
+        end
+        result
+	end
+
+	def get_batting_lineup(lineup_json)
+		result = []
+        lineup_json.each_with_index do |player_ids, index|
+            players = []
+            player_ids.each do |player_id|
+            	players << get_player(player_id)
+            end  
+        	result << LineupSlot.new(index+1, players)
+        end
+        result
+	end
 	
     def initialize(game_id)
         # from game boxscore page, parse json to get lineups (not shown in html)
@@ -121,133 +158,42 @@ class Boxscore
         	@allPlayers << PlayerName.new(player)
         end
  
-        # get away players (a superset of fielding roster and batting lineup)
-        @awayPlayers = []
-        awayTeamId = json["sabertooth_transcoder_config"]["awayTeamId"]
-        playerTeamMembership = json["sabertooth_transcoder_config"]["playerTeamMembership"]
-        playerTeamMembership.each do |player_id, team_id|
-        	@awayPlayers << get_player(player_id) if team_id === awayTeamId
-        end
+        @awayPlayers        = get_players(        json["sabertooth_transcoder_config"]["awayTeamId"],
+                                                  json["sabertooth_transcoder_config"]["playerTeamMembership"])
+		@awayRoster         = get_roster(         json["game"]["away"]["roster"])
+		@awayLineupPitching = get_pitching_lineup(json["game"]["best_account"]["state"]["lineups"]["away"]["pitching"])
+		@awayLineupBatting  = get_batting_lineup( json["game"]["best_account"]["state"]["lineups"]["away"]["batting"])
 
-		# get away fielding roster
-		@awayRoster = []
-		roster = json["game"]["away"]["roster"]
-		roster.each do |player|
-			@awayRoster << RosterName.new(player)
-		end
-		
-		# get away pitching lineup
-		@awayLineupPitching = []
-        lineup = json["game"]["best_account"]["state"]["lineups"]["away"]["pitching"]
-        lineup.each_with_index do |player_id, index|
-            players = []
-            players << get_player(player_id)
-        	@awayLineupPitching << LineupSlot.new(index+1, players)
-        end
-
-		# get away batting lineup
-		@awayLineupBatting = []
-        lineup = json["game"]["best_account"]["state"]["lineups"]["away"]["batting"]
-        lineup.each_with_index do |player_ids, index|
-            players = []
-            player_ids.each do |player_id|
-            	players << get_player(player_id)
-            end  
-        	@awayLineupBatting << LineupSlot.new(index+1, players)
-        end
-
-        # get home players (a superset of fielding roster and batting lineup)
-        @homePlayers = []
-        homeTeamId = json["sabertooth_transcoder_config"]["homeTeamId"]
-        playerTeamMembership = json["sabertooth_transcoder_config"]["playerTeamMembership"]
-        playerTeamMembership.each do |player_id, team_id|
-        	@homePlayers << get_player(player_id) if team_id === homeTeamId
-        end
-
-		# get home fielding roster
-		@homeRoster = []
-		roster = json["game"]["home"]["roster"]
-		roster.each do |player|
-			@homeRoster << RosterName.new(player)
-		end
-		
-		# get home pitching lineup
-		@homeLineupPitching = []
-        lineup = json["game"]["best_account"]["state"]["lineups"]["home"]["pitching"]
-        lineup.each_with_index do |player_id, index|
-            players = []
-            players << get_player(player_id)
-        	@homeLineupPitching << LineupSlot.new(index+1, players)
-        end
-
-		# get away batting lineup
-		@homeLineupBatting = []
-        lineup = json["game"]["best_account"]["state"]["lineups"]["home"]["batting"]
-        lineup.each_with_index do |player_ids, index|
-            players = []
-            player_ids.each do |player_id|
-            	players << get_player(player_id)
-            end  
-        	@homeLineupBatting << LineupSlot.new(index+1, players)
-        end
+        @homePlayers        = get_players(        json["sabertooth_transcoder_config"]["homeTeamId"],
+                                                  json["sabertooth_transcoder_config"]["playerTeamMembership"])
+		@homeRoster         = get_roster(         json["game"]["home"]["roster"])
+		@homeLineupPitching = get_pitching_lineup(json["game"]["best_account"]["state"]["lineups"]["home"]["pitching"])
+		@homeLineupBatting  = get_batting_lineup( json["game"]["best_account"]["state"]["lineups"]["home"]["batting"])
     end
+
+	def display_players(label, players)
+        puts "<%s>" % label
+        players.each do |player|
+        	player.display
+        end
+        puts "</%s>" % label
+	end
 
     def display_xml
         puts "<boxscore>"
-
-        puts "<all_players>"
-        @allPlayers.each do |player|
-        	player.display
-        end
-        puts "</all_players>"
-
+        display_players("all_players", @allPlayers)
         puts "<away_team>"
-        puts "<players>"
-        @awayPlayers.each do |player|
-        	player.display
-        end
-        puts "</players>"
-        puts "<roster>"
-        @awayRoster.each do |player|
-        	player.display
-        end
-        puts "</roster>"
-        puts "<lineup_pitching>"
-        @awayLineupPitching.each do |player|
-        	player.display
-        end
-        puts "</lineup_pitching>"
-        puts "<lineup_batting>"
-        @awayLineupBatting.each do |player|
-        	player.display
-        end
-        puts "</lineup_batting>"
+        display_players("players",         @awayPlayers)
+        display_players("roster",          @awayRoster)
+        display_players("lineup_pitching", @awayLineupPitching)
+        display_players("lineup_batting",  @awayLineupBatting)
         puts "</away_team>"
-
         puts "<home_team>"
-        puts "<players>"
-        @homePlayers.each do |player|
-        	player.display
-        end
-        puts "</players>"
-        puts "<roster>"
-        @homeRoster.each do |player|
-        	player.display
-        end
-        puts "</roster>"
-        puts "<lineup_pitching>"
-        @homeLineupPitching.each do |player|
-        	player.display
-        end
-        puts "</lineup_pitching>"
-        puts "<lineup_batting>"
-        @homeLineupBatting.each do |player|
-        	player.display
-        end
-        puts "</lineup_batting>"
+        display_players("players",         @homePlayers)
+        display_players("roster",          @homeRoster)
+        display_players("lineup_pitching", @homeLineupPitching)
+        display_players("lineup_batting",  @homeLineupBatting)
         puts "</home_team>"
-
         puts "</boxscore>"
     end
 end
-

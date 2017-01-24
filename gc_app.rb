@@ -10,9 +10,6 @@ require './gc_teams'
 
 
 # TODO: Summary list of TODO items
-# - parse lines-ups from recap json as gc_recap.rb
-# - add input from xml to speed stats generation work?? or is that another app for rails server?
-# - for generated stats, will need to parse new apperence pitch_summary and play_description
 # - start generation of some stats (batting: PA, BA, OBP, SLG, field: PO E, catch: INN PB SB SB-ATT CS CS% PIK CI)
 # - compare generated stats with GC stats
 
@@ -119,8 +116,14 @@ parser = OptionParser.new do |opt|
     opt.on('-I', '--Innings <count>',                      '(debug)    limit inning halfs per game')                         { |o| $options.halfs        = o    }
     opt.on('-A', '--Appearences <count>',                  '(debug)    limit plate appearences per game')                    { |o| $options.appearences  = o    }
     opt.on('-D', '--Debug',                                '(debug)    show debug messages')                                 { |o| $options.debug        = true }
+    opt.on('-v', '--Version',                              'show the current version of the app.')                           { |o| $options.version      = true }
 end
 parser.parse!
+
+if $options.version
+	puts "gc_app: version %s" % GC_APP_VERSION
+	exit
+end
 
 # validate options
 if $options.input.nil?

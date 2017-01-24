@@ -10,6 +10,7 @@ require 'watir'
 
 require './gc_browser'
 
+GC_APP_VERSION = "0.1"
 
 GC_BASE_URI  = 'https://gc.com'
 GC_LOGIN_URI = GC_BASE_URI + '/login'
